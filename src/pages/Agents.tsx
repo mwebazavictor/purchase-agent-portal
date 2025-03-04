@@ -13,28 +13,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Default pricing options for agents that don't have pricing defined
-const DEFAULT_PRICING = {
-  basic: 29,
-  professional: 79,
-  enterprise: 199
-};
-
-// Default features for agents that don't have features defined
-const DEFAULT_FEATURES = [
-  "24/7 AI assistance",
-  "Customizable responses",
-  "Analytics dashboard",
-  "Customer support"
-];
-
 const Agents = () => {
   const { user } = useAuth();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [purchasedAgents, setPurchasedAgents] = useState<PurchasedAgent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
-  const [selectedPlan, setSelectedPlan] = useState<string>("basic");
+  const [selectedPlan, setSelectedPlan] = useState<string>("free");
   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -46,15 +31,7 @@ const Agents = () => {
         
         // Filter to only show active agents
         const activeAgents = fetchedAgents.filter(agent => agent.status === "active");
-        
-        // Add default pricing and features if not provided
-        const agentsWithDefaults = activeAgents.map(agent => ({
-          ...agent,
-          pricing: agent.pricing || DEFAULT_PRICING,
-          features: agent.features || DEFAULT_FEATURES
-        }));
-        
-        setAgents(agentsWithDefaults);
+        setAgents(activeAgents);
         
         if (user?.company_id) {
           const purchased = await purchasedAgentApi.getPurchasedAgents(user.company_id);
@@ -62,6 +39,7 @@ const Agents = () => {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+        toast.error("Failed to load agents. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -75,31 +53,40 @@ const Agents = () => {
     
     try {
       const plan = selectedPlan;
-      const pricing = selectedAgent.pricing || DEFAULT_PRICING;
-      const amount = pricing[plan as keyof typeof pricing].toString();
+      // Fixed amount based on plan
+      const amount = plan === "free" ? "0" : "500";
       
       await purchasedAgentApi.purchaseAgent({
         company_id: user.company_id,
         plan,
         amount,
         period: 30, // 30 days subscription
-        agent_id: selectedAgent._id // Using _id instead of id
+        agent_id: selectedAgent._id
       });
       
-      toast.success(`Successfully purchased ${selectedAgent.name}`);
+      toast.success(`Successfully subscribed to ${selectedAgent.name}`);
       setDialogOpen(false);
       
       // Refresh purchased agents
-      const purchased = await purchasedAgentApi.getPurchasedAgents(user.company_id);
-      setPurchasedAgents(purchased);
+      if (user?.company_id) {
+        const purchased = await purchasedAgentApi.getPurchasedAgents(user.company_id);
+        setPurchasedAgents(purchased);
+      }
     } catch (error) {
       console.error("Error purchasing agent:", error);
-      toast.error("Failed to purchase agent. Please try again.");
+      toast.error("Failed to subscribe to agent. Please try again.");
     }
   };
 
   const isPurchased = (agentId: string) => {
     return purchasedAgents.some(pa => pa.agent_id === agentId);
+  };
+
+  const navToMarketplace = () => {
+    const marketplaceTab = document.querySelector('[data-value="marketplace"]') as HTMLElement;
+    if (marketplaceTab) {
+      marketplaceTab.click();
+    }
   };
 
   return (
@@ -111,7 +98,7 @@ const Agents = () => {
 
       <Tabs defaultValue="marketplace" className="w-full">
         <TabsList>
-          <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
+          <TabsTrigger value="marketplace" data-value="marketplace">Marketplace</TabsTrigger>
           <TabsTrigger value="my-agents">My Agents</TabsTrigger>
         </TabsList>
         
@@ -146,30 +133,19 @@ const Agents = () => {
                   </CardHeader>
                   <CardContent className="flex-1">
                     <div className="mb-4">
-                      <h3 className="text-sm font-medium mb-2">Features:</h3>
-                      <ul className="space-y-2">
-                        {(agent.features || DEFAULT_FEATURES).map((feature, index) => (
-                          <li key={index} className="flex items-start text-sm">
-                            <Check size={16} className="mr-2 text-primary flex-shrink-0 mt-0.5" />
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
+                      <h3 className="text-sm font-medium mb-2">{agent.title}</h3>
                     </div>
                     <div className="mt-4">
-                      <h3 className="text-sm font-medium mb-2">Pricing:</h3>
-                      <div className="grid grid-cols-3 gap-2 text-center">
+                      <h3 className="text-sm font-medium mb-2">Available Plans:</h3>
+                      <div className="grid grid-cols-2 gap-2 text-center">
                         <div className="rounded-md border p-2">
-                          <div className="font-medium">Basic</div>
-                          <div className="text-lg">${(agent.pricing || DEFAULT_PRICING).basic}</div>
+                          <div className="font-medium">Free</div>
+                          <div className="text-lg">$0</div>
                         </div>
-                        <div className="rounded-md border p-2">
-                          <div className="font-medium">Pro</div>
-                          <div className="text-lg">${(agent.pricing || DEFAULT_PRICING).professional}</div>
-                        </div>
-                        <div className="rounded-md border p-2">
+                        <div className="rounded-md border p-2 bg-gray-100">
                           <div className="font-medium">Enterprise</div>
-                          <div className="text-lg">${(agent.pricing || DEFAULT_PRICING).enterprise}</div>
+                          <div className="text-lg">$500</div>
+                          <div className="text-xs mt-1 text-gray-500">Coming soon</div>
                         </div>
                       </div>
                     </div>
@@ -178,18 +154,19 @@ const Agents = () => {
                     {isPurchased(agent._id) ? (
                       <Button className="w-full" variant="outline" disabled>
                         <Check size={16} className="mr-2" />
-                        Purchased
+                        Subscribed
                       </Button>
                     ) : (
                       <Button 
                         className="w-full" 
                         onClick={() => {
                           setSelectedAgent(agent);
+                          setSelectedPlan("free");
                           setDialogOpen(true);
                         }}
                       >
                         <ShoppingCart size={16} className="mr-2" />
-                        Purchase
+                        Subscribe
                       </Button>
                     )}
                   </CardFooter>
@@ -221,7 +198,8 @@ const Agents = () => {
                 // Find the agent details
                 const agentDetails = agents.find(a => a._id === purchased.agent_id) || {
                   name: `Agent ${purchased.agent_id.slice(0, 5)}...`,
-                  description: "Custom agent",
+                  description: "AI agent",
+                  title: "Custom Agent"
                 };
                 
                 return (
@@ -258,9 +236,9 @@ const Agents = () => {
               })
             ) : (
               <div className="col-span-3 py-12 text-center">
-                <h3 className="text-lg font-medium mb-2">No agents purchased yet</h3>
-                <p className="text-muted-foreground mb-4">Purchase your first agent from the marketplace</p>
-                <Button onClick={() => document.querySelector('[value="marketplace"]')?.click()}>
+                <h3 className="text-lg font-medium mb-2">No agents subscribed yet</h3>
+                <p className="text-muted-foreground mb-4">Subscribe to your first agent from the marketplace</p>
+                <Button onClick={navToMarketplace}>
                   Browse Marketplace
                 </Button>
               </div>
@@ -273,7 +251,7 @@ const Agents = () => {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="glass-card">
           <DialogHeader>
-            <DialogTitle>Purchase Agent</DialogTitle>
+            <DialogTitle>Subscribe to Agent</DialogTitle>
             <DialogDescription>
               Select a plan for {selectedAgent?.name}
             </DialogDescription>
@@ -283,22 +261,21 @@ const Agents = () => {
             <div className="space-y-2">
               <label className="text-sm font-medium">Select Plan</label>
               <Select 
-                defaultValue="basic" 
+                defaultValue="free" 
                 onValueChange={value => setSelectedPlan(value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a plan" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="basic">Basic (${(selectedAgent?.pricing || DEFAULT_PRICING).basic}/month)</SelectItem>
-                  <SelectItem value="professional">Professional (${(selectedAgent?.pricing || DEFAULT_PRICING).professional}/month)</SelectItem>
-                  <SelectItem value="enterprise">Enterprise (${(selectedAgent?.pricing || DEFAULT_PRICING).enterprise}/month)</SelectItem>
+                  <SelectItem value="free">Free ($0/month)</SelectItem>
+                  <SelectItem value="enterprise" disabled>Enterprise ($500/month) - Coming Soon</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             
             <div className="rounded-md bg-muted p-4">
-              <h4 className="text-sm font-medium mb-2">Your purchase includes:</h4>
+              <h4 className="text-sm font-medium mb-2">Your subscription includes:</h4>
               <ul className="space-y-2">
                 <li className="text-sm flex items-start">
                   <Check size={14} className="mr-2 text-primary flex-shrink-0 mt-0.5" />
@@ -306,11 +283,11 @@ const Agents = () => {
                 </li>
                 <li className="text-sm flex items-start">
                   <Check size={14} className="mr-2 text-primary flex-shrink-0 mt-0.5" />
-                  <span>Implementation support</span>
+                  <span>Implementation options (iframe/CDN)</span>
                 </li>
                 <li className="text-sm flex items-start">
                   <Check size={14} className="mr-2 text-primary flex-shrink-0 mt-0.5" />
-                  <span>Access to analytics</span>
+                  <span>Basic support</span>
                 </li>
               </ul>
             </div>
@@ -321,7 +298,7 @@ const Agents = () => {
               Cancel
             </Button>
             <Button onClick={handlePurchase}>
-              Confirm Purchase
+              Confirm Subscription
             </Button>
           </DialogFooter>
         </DialogContent>

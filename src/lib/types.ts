@@ -7,6 +7,7 @@ export interface User {
   phone: string;
   role: "admin" | "developer";
   company_id: string;
+  Company_id?: string; // Added for compatibility with API response
 }
 
 export interface Company {
@@ -23,18 +24,12 @@ export interface Agent {
   description: string;
   title: string;
   status: string;
-  pricing?: {
-    basic: number;
-    professional: number;
-    enterprise: number;
-  };
-  features?: string[];
 }
 
 export interface PurchasedAgent {
   id: string;
   company_id: string;
-  plan: "basic" | "professional" | "enterprise";
+  plan: "free" | "enterprise";
   amount: number;
   period: number; 
   agent_id: string;

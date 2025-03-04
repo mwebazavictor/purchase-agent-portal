@@ -52,7 +52,7 @@ const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
 
 // Auth APIs
 export const authApi = {
-  login: async (email: string, password: string): Promise<AuthResponse> => {
+  login: async (email: string, password: string): Promise<any> => {
     const data = await apiFetch("/auth/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
@@ -62,7 +62,11 @@ export const authApi = {
     localStorage.setItem("authToken", data.accessToken);
     localStorage.setItem("refreshToken", data.refreshToken);
     
-    return data;
+    return {
+      user: data.user,
+      token: data.accessToken,
+      refreshToken: data.refreshToken
+    };
   },
   
   refreshToken: async (refreshToken: string) => {

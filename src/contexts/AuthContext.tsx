@@ -26,6 +26,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (token) {
         try {
           const userData = await userApi.getCurrentUser();
+          // If API returns Company_id instead of company_id, normalize it
+          if (userData.Company_id && !userData.company_id) {
+            userData.company_id = userData.Company_id;
+          }
           setUser(userData);
         } catch (error) {
           // Token might be expired, try to refresh
@@ -34,6 +38,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             try {
               await authApi.refreshToken(refreshToken);
               const userData = await userApi.getCurrentUser();
+              // If API returns Company_id instead of company_id, normalize it
+              if (userData.Company_id && !userData.company_id) {
+                userData.company_id = userData.Company_id;
+              }
               setUser(userData);
             } catch (refreshError) {
               // Refresh failed, clear tokens
@@ -53,6 +61,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     try {
       const response = await authApi.login(email, password);
+      // If API returns Company_id instead of company_id, normalize it
+      if (response.user.Company_id && !response.user.company_id) {
+        response.user.company_id = response.user.Company_id;
+      }
       setUser(response.user);
       toast.success("Login successful");
       navigate("/dashboard");
