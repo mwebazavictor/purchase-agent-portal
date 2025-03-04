@@ -13,56 +13,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Mock data for agents since we don't have a real agent endpoint
-const mockAgents: Agent[] = [
-  {
-    id: "agent1",
-    name: "Customer Support Agent",
-    description: "AI-powered customer support agent that can handle inquiries, provide information, and resolve issues.",
-    pricing: {
-      basic: 29,
-      professional: 79,
-      enterprise: 199
-    },
-    features: [
-      "24/7 customer support",
-      "Multilingual support",
-      "Custom knowledge base integration",
-      "Analytics dashboard"
-    ]
-  },
-  {
-    id: "agent2",
-    name: "Sales Assistant",
-    description: "An AI agent designed to help your sales team qualify leads, answer product questions, and schedule demos.",
-    pricing: {
-      basic: 39,
-      professional: 99,
-      enterprise: 249
-    },
-    features: [
-      "Lead qualification",
-      "Product recommendation",
-      "Meeting scheduling",
-      "Follow-up automation"
-    ]
-  },
-  {
-    id: "agent3",
-    name: "Knowledge Base Agent",
-    description: "This agent helps your team access internal knowledge and documentation quickly and efficiently.",
-    pricing: {
-      basic: 19,
-      professional: 59,
-      enterprise: 149
-    },
-    features: [
-      "Document search",
-      "FAQ answering",
-      "Process guidance",
-      "Training resources"
-    ]
-  }
+// Default pricing options for agents that don't have pricing defined
+const DEFAULT_PRICING = {
+  basic: 29,
+  professional: 79,
+  enterprise: 199
+};
+
+// Default features for agents that don't have features defined
+const DEFAULT_FEATURES = [
+  "24/7 AI assistance",
+  "Customizable responses",
+  "Analytics dashboard",
+  "Customer support"
 ];
 
 const Agents = () => {
@@ -78,9 +41,20 @@ const Agents = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // In a real implementation, get actual agents from API
-        // const agents = await agentApi.getAgents();
-        setAgents(mockAgents);
+        // Get actual agents from API
+        const fetchedAgents = await agentApi.getAgents();
+        
+        // Filter to only show active agents
+        const activeAgents = fetchedAgents.filter(agent => agent.status === "active");
+        
+        // Add default pricing and features if not provided
+        const agentsWithDefaults = activeAgents.map(agent => ({
+          ...agent,
+          pricing: agent.pricing || DEFAULT_PRICING,
+          features: agent.features || DEFAULT_FEATURES
+        }));
+        
+        setAgents(agentsWithDefaults);
         
         if (user?.company_id) {
           const purchased = await purchasedAgentApi.getPurchasedAgents(user.company_id);
@@ -101,14 +75,15 @@ const Agents = () => {
     
     try {
       const plan = selectedPlan;
-      const amount = selectedAgent.pricing[plan as keyof typeof selectedAgent.pricing].toString();
+      const pricing = selectedAgent.pricing || DEFAULT_PRICING;
+      const amount = pricing[plan as keyof typeof pricing].toString();
       
       await purchasedAgentApi.purchaseAgent({
         company_id: user.company_id,
         plan,
         amount,
         period: 30, // 30 days subscription
-        agent_id: selectedAgent.id
+        agent_id: selectedAgent._id // Using _id instead of id
       });
       
       toast.success(`Successfully purchased ${selectedAgent.name}`);
@@ -164,7 +139,7 @@ const Agents = () => {
               ))
             ) : (
               agents.map((agent) => (
-                <Card key={agent.id} className="agent-card h-full flex flex-col">
+                <Card key={agent._id} className="agent-card h-full flex flex-col">
                   <CardHeader>
                     <CardTitle>{agent.name}</CardTitle>
                     <CardDescription>{agent.description}</CardDescription>
@@ -173,7 +148,7 @@ const Agents = () => {
                     <div className="mb-4">
                       <h3 className="text-sm font-medium mb-2">Features:</h3>
                       <ul className="space-y-2">
-                        {agent.features.map((feature, index) => (
+                        {(agent.features || DEFAULT_FEATURES).map((feature, index) => (
                           <li key={index} className="flex items-start text-sm">
                             <Check size={16} className="mr-2 text-primary flex-shrink-0 mt-0.5" />
                             <span>{feature}</span>
@@ -186,21 +161,21 @@ const Agents = () => {
                       <div className="grid grid-cols-3 gap-2 text-center">
                         <div className="rounded-md border p-2">
                           <div className="font-medium">Basic</div>
-                          <div className="text-lg">${agent.pricing.basic}</div>
+                          <div className="text-lg">${(agent.pricing || DEFAULT_PRICING).basic}</div>
                         </div>
                         <div className="rounded-md border p-2">
                           <div className="font-medium">Pro</div>
-                          <div className="text-lg">${agent.pricing.professional}</div>
+                          <div className="text-lg">${(agent.pricing || DEFAULT_PRICING).professional}</div>
                         </div>
                         <div className="rounded-md border p-2">
                           <div className="font-medium">Enterprise</div>
-                          <div className="text-lg">${agent.pricing.enterprise}</div>
+                          <div className="text-lg">${(agent.pricing || DEFAULT_PRICING).enterprise}</div>
                         </div>
                       </div>
                     </div>
                   </CardContent>
                   <CardFooter>
-                    {isPurchased(agent.id) ? (
+                    {isPurchased(agent._id) ? (
                       <Button className="w-full" variant="outline" disabled>
                         <Check size={16} className="mr-2" />
                         Purchased
@@ -244,7 +219,7 @@ const Agents = () => {
             ) : purchasedAgents.length > 0 ? (
               purchasedAgents.map((purchased) => {
                 // Find the agent details
-                const agentDetails = agents.find(a => a.id === purchased.agent_id) || {
+                const agentDetails = agents.find(a => a._id === purchased.agent_id) || {
                   name: `Agent ${purchased.agent_id.slice(0, 5)}...`,
                   description: "Custom agent",
                 };
@@ -315,9 +290,9 @@ const Agents = () => {
                   <SelectValue placeholder="Select a plan" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="basic">Basic (${selectedAgent?.pricing.basic}/month)</SelectItem>
-                  <SelectItem value="professional">Professional (${selectedAgent?.pricing.professional}/month)</SelectItem>
-                  <SelectItem value="enterprise">Enterprise (${selectedAgent?.pricing.enterprise}/month)</SelectItem>
+                  <SelectItem value="basic">Basic (${(selectedAgent?.pricing || DEFAULT_PRICING).basic}/month)</SelectItem>
+                  <SelectItem value="professional">Professional (${(selectedAgent?.pricing || DEFAULT_PRICING).professional}/month)</SelectItem>
+                  <SelectItem value="enterprise">Enterprise (${(selectedAgent?.pricing || DEFAULT_PRICING).enterprise}/month)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

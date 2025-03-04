@@ -18,15 +18,17 @@ export interface Company {
 }
 
 export interface Agent {
-  id: string;
+  _id: string;
   name: string;
   description: string;
-  pricing: {
+  title: string;
+  status: string;
+  pricing?: {
     basic: number;
     professional: number;
     enterprise: number;
   };
-  features: string[];
+  features?: string[];
 }
 
 export interface PurchasedAgent {

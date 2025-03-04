@@ -40,7 +40,7 @@ const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = await response.json().catch(() => ({ message: response.statusText }));
       throw new Error(errorData.message || "API request failed");
     }
 
@@ -59,7 +59,7 @@ export const authApi = {
     });
     
     // Store tokens in localStorage
-    localStorage.setItem("authToken", data.token);
+    localStorage.setItem("authToken", data.accessToken);
     localStorage.setItem("refreshToken", data.refreshToken);
     
     return data;
@@ -71,7 +71,7 @@ export const authApi = {
       body: JSON.stringify({ token: refreshToken }),
     });
     
-    localStorage.setItem("authToken", data.token);
+    localStorage.setItem("authToken", data.accessToken);
     localStorage.setItem("refreshToken", data.refreshToken);
     
     return data;
