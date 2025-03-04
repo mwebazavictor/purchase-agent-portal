@@ -13,58 +13,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Mock data for agents since we don't have a real agent endpoint
-const mockAgents: Agent[] = [
-  {
-    id: "agent1",
-    name: "Customer Support Agent",
-    description: "AI-powered customer support agent that can handle inquiries, provide information, and resolve issues.",
-    pricing: {
-      basic: 29,
-      professional: 79,
-      enterprise: 199
-    },
-    features: [
-      "24/7 customer support",
-      "Multilingual support",
-      "Custom knowledge base integration",
-      "Analytics dashboard"
-    ]
-  },
-  {
-    id: "agent2",
-    name: "Sales Assistant",
-    description: "An AI agent designed to help your sales team qualify leads, answer product questions, and schedule demos.",
-    pricing: {
-      basic: 39,
-      professional: 99,
-      enterprise: 249
-    },
-    features: [
-      "Lead qualification",
-      "Product recommendation",
-      "Meeting scheduling",
-      "Follow-up automation"
-    ]
-  },
-  {
-    id: "agent3",
-    name: "Knowledge Base Agent",
-    description: "This agent helps your team access internal knowledge and documentation quickly and efficiently.",
-    pricing: {
-      basic: 19,
-      professional: 59,
-      enterprise: 149
-    },
-    features: [
-      "Document search",
-      "FAQ answering",
-      "Process guidance",
-      "Training resources"
-    ]
-  }
-];
-
 const Agents = () => {
   const { user } = useAuth();
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -78,9 +26,11 @@ const Agents = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // In a real implementation, get actual agents from API
-        // const agents = await agentApi.getAgents();
-        setAgents(mockAgents);
+        // Get actual agents from API instead of mock data
+        const fetchedAgents = await agentApi.getAgents();
+        // Filter agents with active status
+        const activeAgents = fetchedAgents.filter(agent => agent.status === "active");
+        setAgents(activeAgents);
         
         if (user?.company_id) {
           const purchased = await purchasedAgentApi.getPurchasedAgents(user.company_id);
@@ -88,6 +38,7 @@ const Agents = () => {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+        toast.error("Failed to load agents. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -127,6 +78,13 @@ const Agents = () => {
     return purchasedAgents.some(pa => pa.agent_id === agentId);
   };
 
+  const navigateToTab = (tabValue: string) => {
+    const tabElement = document.querySelector(`[data-value="${tabValue}"]`);
+    if (tabElement) {
+      (tabElement as HTMLElement).click();
+    }
+  };
+
   return (
     <div className="space-y-8 animate-fade-in">
       <div>
@@ -136,8 +94,8 @@ const Agents = () => {
 
       <Tabs defaultValue="marketplace" className="w-full">
         <TabsList>
-          <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
-          <TabsTrigger value="my-agents">My Agents</TabsTrigger>
+          <TabsTrigger value="marketplace" data-value="marketplace">Marketplace</TabsTrigger>
+          <TabsTrigger value="my-agents" data-value="my-agents">My Agents</TabsTrigger>
         </TabsList>
         
         <TabsContent value="marketplace" className="mt-6">
@@ -162,7 +120,7 @@ const Agents = () => {
                   </CardFooter>
                 </Card>
               ))
-            ) : (
+            ) : agents.length > 0 ? (
               agents.map((agent) => (
                 <Card key={agent.id} className="agent-card h-full flex flex-col">
                   <CardHeader>
@@ -173,7 +131,7 @@ const Agents = () => {
                     <div className="mb-4">
                       <h3 className="text-sm font-medium mb-2">Features:</h3>
                       <ul className="space-y-2">
-                        {agent.features.map((feature, index) => (
+                        {agent.features && agent.features.map((feature, index) => (
                           <li key={index} className="flex items-start text-sm">
                             <Check size={16} className="mr-2 text-primary flex-shrink-0 mt-0.5" />
                             <span>{feature}</span>
@@ -186,15 +144,15 @@ const Agents = () => {
                       <div className="grid grid-cols-3 gap-2 text-center">
                         <div className="rounded-md border p-2">
                           <div className="font-medium">Basic</div>
-                          <div className="text-lg">${agent.pricing.basic}</div>
+                          <div className="text-lg">${agent.pricing?.basic || 0}</div>
                         </div>
                         <div className="rounded-md border p-2">
                           <div className="font-medium">Pro</div>
-                          <div className="text-lg">${agent.pricing.professional}</div>
+                          <div className="text-lg">${agent.pricing?.professional || 0}</div>
                         </div>
                         <div className="rounded-md border p-2">
                           <div className="font-medium">Enterprise</div>
-                          <div className="text-lg">${agent.pricing.enterprise}</div>
+                          <div className="text-lg">${agent.pricing?.enterprise || 0}</div>
                         </div>
                       </div>
                     </div>
@@ -220,6 +178,11 @@ const Agents = () => {
                   </CardFooter>
                 </Card>
               ))
+            ) : (
+              <div className="col-span-3 py-12 text-center">
+                <h3 className="text-lg font-medium mb-2">No agents available</h3>
+                <p className="text-muted-foreground mb-4">There are currently no active agents available for purchase.</p>
+              </div>
             )}
           </div>
         </TabsContent>
@@ -285,7 +248,7 @@ const Agents = () => {
               <div className="col-span-3 py-12 text-center">
                 <h3 className="text-lg font-medium mb-2">No agents purchased yet</h3>
                 <p className="text-muted-foreground mb-4">Purchase your first agent from the marketplace</p>
-                <Button onClick={() => document.querySelector('[value="marketplace"]')?.click()}>
+                <Button onClick={() => navigateToTab("marketplace")}>
                   Browse Marketplace
                 </Button>
               </div>
@@ -315,9 +278,9 @@ const Agents = () => {
                   <SelectValue placeholder="Select a plan" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="basic">Basic (${selectedAgent?.pricing.basic}/month)</SelectItem>
-                  <SelectItem value="professional">Professional (${selectedAgent?.pricing.professional}/month)</SelectItem>
-                  <SelectItem value="enterprise">Enterprise (${selectedAgent?.pricing.enterprise}/month)</SelectItem>
+                  <SelectItem value="basic">Basic (${selectedAgent?.pricing?.basic || 0}/month)</SelectItem>
+                  <SelectItem value="professional">Professional (${selectedAgent?.pricing?.professional || 0}/month)</SelectItem>
+                  <SelectItem value="enterprise">Enterprise (${selectedAgent?.pricing?.enterprise || 0}/month)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

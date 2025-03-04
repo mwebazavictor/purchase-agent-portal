@@ -21,12 +21,13 @@ export interface Agent {
   id: string;
   name: string;
   description: string;
-  pricing: {
+  pricing?: {
     basic: number;
     professional: number;
     enterprise: number;
   };
-  features: string[];
+  features?: string[];
+  status?: string;
 }
 
 export interface PurchasedAgent {
