@@ -28,6 +28,7 @@ export interface Agent {
 
 export interface PurchasedAgent {
   id: string;
+  _id?: string; // Added for API compatibility
   company_id: string;
   plan: "free" | "enterprise";
   amount: number;
@@ -36,6 +37,7 @@ export interface PurchasedAgent {
   createdAt: string;
   expiresAt: string;
   agent?: Agent;
+  name?: string; // Added for API compatibility
 }
 
 export interface Query {
@@ -52,3 +54,16 @@ export interface AuthResponse {
   token: string;
   refreshToken: string;
 }
+
+export interface RegisterData {
+  companyname: string;
+  companyemail: string;
+  companylocation: string;
+  industry: string;
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  role: "admin";
+}
+

@@ -193,7 +193,7 @@ const SampleQuestions = () => {
 
   const getAgentName = (id: string) => {
     const agent = purchasedAgents.find(a => a.id === id || a._id === id);
-    return agent ? agent.name : "Unknown Agent";
+    return agent?.name || agent?.agent?.name || "Unknown Agent";
   };
 
   return (
@@ -221,9 +221,9 @@ const SampleQuestions = () => {
                   {purchasedAgents.map((agent) => (
                     <SelectItem 
                       key={agent.id || agent._id} 
-                      value={agent.id || agent._id}
+                      value={agent.id || agent._id || ""}
                     >
-                      {agent.name}
+                      {agent.name || agent.agent?.name || `Agent ${agent.agent_id.slice(0, 5)}...`}
                     </SelectItem>
                   ))}
                 </SelectContent>

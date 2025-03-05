@@ -6,7 +6,8 @@ import {
   Agent, 
   PurchasedAgent, 
   Query,
-  AuthResponse 
+  AuthResponse,
+  RegisterData
 } from "./types";
 
 const API_BASE_URL = "https://multi-agents-production-aace.up.railway.app/api/v1";
@@ -123,10 +124,21 @@ export const companyApi = {
     return apiFetch(`/company/${id}`);
   },
   
-  createCompany: async (companyData: any): Promise<Company> => {
-    return apiFetch("/company", {
+  createCompany: async (registerData: RegisterData): Promise<any> => {
+    return fetch(`${API_BASE_URL}/company`, {
       method: "POST",
-      body: JSON.stringify(companyData),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(registerData),
+    }).then(async (response) => {
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: response.statusText }));
+        throw new Error(errorData.message || "Registration failed");
+      }
+      return response.json();
+    }).catch(error => {
+      return handleApiError(error);
     });
   },
 };
@@ -194,6 +206,19 @@ export const queryApi = {
   deleteQuery: async (id: string): Promise<void> => {
     return apiFetch(`/customerSupportQuery/${id}`, {
       method: "DELETE",
+    });
+  },
+};
+
+export const pdfApi = {
+  uploadPdf: async (data: {
+    document: string;
+    user_id: string;
+    company_id: string;
+  }): Promise<any> => {
+    return apiFetch("/upload", {
+      method: "POST",
+      body: JSON.stringify(data),
     });
   },
 };

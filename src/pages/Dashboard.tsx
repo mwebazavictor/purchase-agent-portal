@@ -5,9 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { purchasedAgentApi } from "@/lib/api";
 import { PurchasedAgent } from "@/lib/types";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { Activity, Users, ShoppingBag, ArrowRight } from "lucide-react";
+import { Activity, ShoppingBag, ArrowRight, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -24,7 +25,6 @@ const Dashboard = () => {
                         (response.purchasedAgents && Array.isArray(response.purchasedAgents)) ? 
                         response.purchasedAgents : [];
           
-          console.log("Fetched purchased agents:", agents);
           setPurchasedAgents(agents);
         } catch (error) {
           console.error("Error fetching purchased agents:", error);
@@ -45,7 +45,7 @@ const Dashboard = () => {
     const daysLeft = Math.max(0, Math.ceil((expiryDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)));
     
     return {
-      name: agent.agent?.name || `Agent ${agent.agent_id.slice(0, 5)}...`,
+      name: agent.name || agent.agent?.name || `Agent ${agent.agent_id.slice(0, 5)}...`,
       daysLeft,
       plan: agent.plan,
     };
@@ -58,13 +58,13 @@ const Dashboard = () => {
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground">Welcome back, {user?.name}</p>
         </div>
-        <Button>
+        <Button as={Link} to="/agents">
           <ShoppingBag className="mr-2" size={16} />
           Purchase Agents
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="glass-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Active Agents</CardTitle>
@@ -85,25 +85,7 @@ const Dashboard = () => {
 
         <Card className="glass-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Team Members</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center">
-              <div className="mr-2 p-2 rounded-full bg-primary/10">
-                <Users size={16} className="text-primary" />
-              </div>
-              {isLoading ? (
-                <Skeleton className="h-8 w-16" />
-              ) : (
-                <div className="text-2xl font-bold">5</div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="glass-card">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Agent Usage</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Queries</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center">
@@ -113,7 +95,7 @@ const Dashboard = () => {
               {isLoading ? (
                 <Skeleton className="h-8 w-16" />
               ) : (
-                <div className="text-2xl font-bold">247</div>
+                <div className="text-2xl font-bold">0</div>
               )}
             </div>
           </CardContent>
@@ -145,7 +127,7 @@ const Dashboard = () => {
             ) : (
               <div className="flex flex-col items-center justify-center h-64 text-center">
                 <p className="text-muted-foreground mb-4">No agent subscriptions found.</p>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" as={Link} to="/agents">
                   Purchase your first agent
                 </Button>
               </div>
@@ -155,41 +137,41 @@ const Dashboard = () => {
 
         <Card className="glass-card">
           <CardHeader>
-            <CardTitle>Recent Agents</CardTitle>
-            <CardDescription>Your active agents</CardDescription>
+            <CardTitle>Getting Started</CardTitle>
+            <CardDescription>How to use the platform</CardDescription>
           </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="space-y-4">
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-16 w-full" />
+          <CardContent className="space-y-4">
+            <div className="space-y-4">
+              <div className="p-4 border rounded-lg bg-muted/20">
+                <h3 className="font-medium flex items-center gap-2 mb-2">
+                  <BookOpen size={16} className="text-primary" />
+                  Step 1: Purchase an Agent
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Browse and purchase an AI agent that fits your business needs.
+                </p>
               </div>
-            ) : purchasedAgents.length > 0 ? (
-              <div className="space-y-4">
-                {purchasedAgents.slice(0, 4).map((agent) => (
-                  <div 
-                    key={agent.id}
-                    className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors"
-                  >
-                    <div>
-                      <h3 className="font-medium">{agent.agent?.name || `Agent ${agent.agent_id.slice(0, 5)}...`}</h3>
-                      <p className="text-xs text-muted-foreground capitalize">{agent.plan} Plan</p>
-                    </div>
-                    <Button variant="ghost" size="icon">
-                      <ArrowRight size={16} />
-                    </Button>
-                  </div>
-                ))}
+              
+              <div className="p-4 border rounded-lg bg-muted/20">
+                <h3 className="font-medium flex items-center gap-2 mb-2">
+                  <BookOpen size={16} className="text-primary" />
+                  Step 2: Train Your Agent
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Upload relevant documents and add sample questions to train your agent.
+                </p>
               </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-64 text-center">
-                <p className="text-muted-foreground mb-4">No agents purchased yet.</p>
-                <Button variant="outline" size="sm">
-                  Browse agents
-                </Button>
+              
+              <div className="p-4 border rounded-lg bg-muted/20">
+                <h3 className="font-medium flex items-center gap-2 mb-2">
+                  <BookOpen size={16} className="text-primary" />
+                  Step 3: Implement
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Follow the implementation guide to integrate your agent onto your website.
+                </p>
               </div>
-            )}
+            </div>
           </CardContent>
         </Card>
       </div>

@@ -9,6 +9,7 @@ import Layout from "@/components/Layout";
 
 // Pages
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Agents from "./pages/Agents";
 import Implementation from "./pages/Implementation";
@@ -43,6 +44,10 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/login" element={
         isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />
+      } />
+      
+      <Route path="/register" element={
+        isAuthenticated ? <Navigate to="/dashboard" replace /> : <Register />
       } />
       
       <Route path="/" element={

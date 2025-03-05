@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -20,7 +21,7 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-secondary/30 p-4 animate-fade-in">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">Agent Portal</h1>
+          <h1 className="text-3xl font-bold mb-2">Tubayo Business Support</h1>
           <p className="text-muted-foreground">Sign in to your account</p>
         </div>
         
@@ -73,9 +74,9 @@ const Login = () => {
               </Button>
               <p className="text-sm text-center text-muted-foreground">
                 Don't have an account?{" "}
-                <a href="/signup" className="text-primary hover:underline">
-                  Contact your admin
-                </a>
+                <Link to="/register" className="text-primary hover:underline">
+                  Create account
+                </Link>
               </p>
             </CardFooter>
           </form>
