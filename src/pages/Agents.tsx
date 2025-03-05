@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import PdfUploadDialog from "@/components/PdfUploadDialog";
 
 const Agents = () => {
   const { user } = useAuth();
@@ -21,25 +21,22 @@ const Agents = () => {
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<string>("free");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [selectedPurchasedAgent, setSelectedPurchasedAgent] = useState<string>("");
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Get actual agents from API
         const fetchedAgents = await agentApi.getAgents();
-        
-        // Filter to only show active agents
         const activeAgents = fetchedAgents.filter(agent => agent.status === "active");
         setAgents(activeAgents);
         
         if (user?.company_id) {
           const response = await purchasedAgentApi.getPurchasedAgents(user.company_id);
-          // Ensure we're getting an array of purchased agents
           const purchased = Array.isArray(response) ? response : 
                            (response.purchasedAgents && Array.isArray(response.purchasedAgents)) ? 
                            response.purchasedAgents : [];
-          
           console.log("Purchased agents response:", response);
           console.log("Processed purchased agents:", purchased);
           setPurchasedAgents(purchased);
@@ -47,7 +44,7 @@ const Agents = () => {
       } catch (error) {
         console.error("Error fetching data:", error);
         toast.error("Failed to load agents. Please try again.");
-        setPurchasedAgents([]); // Set to empty array in case of error
+        setPurchasedAgents([]);
       } finally {
         setIsLoading(false);
       }
@@ -61,24 +58,21 @@ const Agents = () => {
     
     try {
       const plan = selectedPlan;
-      // Fixed amount based on plan
       const amount = plan === "free" ? "0" : "500";
       
       await purchasedAgentApi.purchaseAgent({
         company_id: user.company_id,
         plan,
         amount,
-        period: 30, // 30 days subscription
+        period: 30,
         agent_id: selectedAgent._id
       });
       
       toast.success(`Successfully subscribed to ${selectedAgent.name}`);
       setDialogOpen(false);
       
-      // Refresh purchased agents
       if (user?.company_id) {
         const response = await purchasedAgentApi.getPurchasedAgents(user.company_id);
-        // Ensure we're getting an array of purchased agents
         const purchased = Array.isArray(response) ? response : 
                          (response.purchasedAgents && Array.isArray(response.purchasedAgents)) ? 
                          response.purchasedAgents : [];
@@ -91,7 +85,6 @@ const Agents = () => {
   };
 
   const isPurchased = (agentId: string) => {
-    // Ensure purchasedAgents is an array before calling .some()
     return Array.isArray(purchasedAgents) && purchasedAgents.some(pa => pa.agent_id === agentId);
   };
 
@@ -208,7 +201,6 @@ const Agents = () => {
               ))
             ) : purchasedAgents.length > 0 ? (
               purchasedAgents.map((purchased) => {
-                // Find the agent details
                 const agentDetails = agents.find(a => a._id === purchased.agent_id) || {
                   name: `Agent ${purchased.agent_id.slice(0, 5)}...`,
                   description: "AI agent",
@@ -216,7 +208,7 @@ const Agents = () => {
                 };
                 
                 return (
-                  <Card key={purchased.id} className="agent-card h-full flex flex-col">
+                  <Card key={purchased._id || purchased.id} className="agent-card h-full flex flex-col">
                     <CardHeader>
                       <div className="flex justify-between items-start">
                         <CardTitle>{agentDetails.name}</CardTitle>
@@ -240,7 +232,13 @@ const Agents = () => {
                       <Button className="flex-1" variant="outline">
                         Implement
                       </Button>
-                      <Button className="flex-1">
+                      <Button 
+                        className="flex-1"
+                        onClick={() => {
+                          setSelectedPurchasedAgent(purchased._id || purchased.id);
+                          setUploadDialogOpen(true);
+                        }}
+                      >
                         Manage
                       </Button>
                     </CardFooter>
@@ -260,7 +258,6 @@ const Agents = () => {
         </TabsContent>
       </Tabs>
 
-      {/* Purchase dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="glass-card">
           <DialogHeader>
@@ -316,6 +313,12 @@ const Agents = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <PdfUploadDialog
+        open={uploadDialogOpen}
+        onOpenChange={setUploadDialogOpen}
+        purchasedAgentId={selectedPurchasedAgent}
+      />
     </div>
   );
 };

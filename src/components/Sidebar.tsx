@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,9 +8,7 @@ import {
   ShoppingBag, 
   Users, 
   Code, 
-  Settings, 
   LogOut,
-  CreditCard
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -40,16 +37,6 @@ const Sidebar = () => {
       path: "/implementation",
       name: "Implementation",
       icon: <Code size={20} />,
-    },
-    {
-      path: "/billing",
-      name: "Billing",
-      icon: <CreditCard size={20} />,
-    },
-    {
-      path: "/settings",
-      name: "Settings",
-      icon: <Settings size={20} />,
     },
   ];
 
