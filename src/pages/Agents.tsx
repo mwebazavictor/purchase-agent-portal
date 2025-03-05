@@ -34,12 +34,20 @@ const Agents = () => {
         setAgents(activeAgents);
         
         if (user?.company_id) {
-          const purchased = await purchasedAgentApi.getPurchasedAgents(user.company_id);
+          const response = await purchasedAgentApi.getPurchasedAgents(user.company_id);
+          // Ensure we're getting an array of purchased agents
+          const purchased = Array.isArray(response) ? response : 
+                           (response.purchasedAgents && Array.isArray(response.purchasedAgents)) ? 
+                           response.purchasedAgents : [];
+          
+          console.log("Purchased agents response:", response);
+          console.log("Processed purchased agents:", purchased);
           setPurchasedAgents(purchased);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
         toast.error("Failed to load agents. Please try again.");
+        setPurchasedAgents([]); // Set to empty array in case of error
       } finally {
         setIsLoading(false);
       }
@@ -69,7 +77,11 @@ const Agents = () => {
       
       // Refresh purchased agents
       if (user?.company_id) {
-        const purchased = await purchasedAgentApi.getPurchasedAgents(user.company_id);
+        const response = await purchasedAgentApi.getPurchasedAgents(user.company_id);
+        // Ensure we're getting an array of purchased agents
+        const purchased = Array.isArray(response) ? response : 
+                         (response.purchasedAgents && Array.isArray(response.purchasedAgents)) ? 
+                         response.purchasedAgents : [];
         setPurchasedAgents(purchased);
       }
     } catch (error) {
@@ -79,7 +91,8 @@ const Agents = () => {
   };
 
   const isPurchased = (agentId: string) => {
-    return purchasedAgents.some(pa => pa.agent_id === agentId);
+    // Ensure purchasedAgents is an array before calling .some()
+    return Array.isArray(purchasedAgents) && purchasedAgents.some(pa => pa.agent_id === agentId);
   };
 
   const navToMarketplace = () => {
