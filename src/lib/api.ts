@@ -144,7 +144,7 @@ export const agentApi = {
 
 // Purchased Agent APIs
 export const purchasedAgentApi = {
-  getPurchasedAgents: async (companyId: string): Promise<PurchasedAgent[]> => {
+  getPurchasedAgents: async (companyId: string): Promise<any> => {
     return apiFetch(`/purchasedagents/withcompayid/${companyId}`);
   },
   

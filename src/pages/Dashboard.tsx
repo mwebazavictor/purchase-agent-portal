@@ -18,10 +18,17 @@ const Dashboard = () => {
     const fetchData = async () => {
       if (user?.company_id) {
         try {
-          const agents = await purchasedAgentApi.getPurchasedAgents(user.company_id);
+          const response = await purchasedAgentApi.getPurchasedAgents(user.company_id);
+          // Ensure we're getting an array of purchased agents
+          const agents = Array.isArray(response) ? response : 
+                        (response.purchasedAgents && Array.isArray(response.purchasedAgents)) ? 
+                        response.purchasedAgents : [];
+          
+          console.log("Fetched purchased agents:", agents);
           setPurchasedAgents(agents);
         } catch (error) {
           console.error("Error fetching purchased agents:", error);
+          setPurchasedAgents([]); // Set to empty array in case of error
         } finally {
           setIsLoading(false);
         }
