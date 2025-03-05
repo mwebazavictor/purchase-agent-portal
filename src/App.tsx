@@ -12,6 +12,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Agents from "./pages/Agents";
 import Implementation from "./pages/Implementation";
+import SampleQuestions from "./pages/SampleQuestions";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -72,6 +73,14 @@ const AppRoutes = () => {
         <ProtectedRoute>
           <Layout>
             <Implementation />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/sample-questions" element={
+        <ProtectedRoute>
+          <Layout>
+            <SampleQuestions />
           </Layout>
         </ProtectedRoute>
       } />

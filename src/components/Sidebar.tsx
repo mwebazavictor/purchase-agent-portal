@@ -6,8 +6,8 @@ import {
   ChevronRight, 
   LayoutDashboard, 
   ShoppingBag, 
-  Users, 
   Code, 
+  MessageSquare,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -29,9 +29,9 @@ const Sidebar = () => {
       icon: <ShoppingBag size={20} />,
     },
     {
-      path: "/users",
-      name: "Users",
-      icon: <Users size={20} />,
+      path: "/sample-questions",
+      name: "Sample Questions",
+      icon: <MessageSquare size={20} />,
     },
     {
       path: "/implementation",

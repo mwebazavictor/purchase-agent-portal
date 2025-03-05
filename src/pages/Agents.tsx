@@ -1,4 +1,6 @@
+
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PdfUploadDialog from "@/components/PdfUploadDialog";
 
 const Agents = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [purchasedAgents, setPurchasedAgents] = useState<PurchasedAgent[]>([]);
@@ -95,6 +98,10 @@ const Agents = () => {
     }
   };
 
+  const handleImplement = (agentId: string) => {
+    navigate('/implementation', { state: { selectedAgent: agentId }});
+  };
+
   return (
     <div className="space-y-8 animate-fade-in">
       <div>
@@ -102,11 +109,89 @@ const Agents = () => {
         <p className="text-muted-foreground">Browse and manage your AI agents</p>
       </div>
 
-      <Tabs defaultValue="marketplace" className="w-full">
+      <Tabs defaultValue="my-agents" className="w-full">
         <TabsList>
+          <TabsTrigger value="my-agents" data-value="my-agents">My Agents</TabsTrigger>
           <TabsTrigger value="marketplace" data-value="marketplace">Marketplace</TabsTrigger>
-          <TabsTrigger value="my-agents">My Agents</TabsTrigger>
         </TabsList>
+        
+        <TabsContent value="my-agents" className="mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {isLoading ? (
+              Array(2).fill(0).map((_, i) => (
+                <Card key={i} className="glass-card h-64">
+                  <CardHeader>
+                    <Skeleton className="h-8 w-3/4 mb-2" />
+                    <Skeleton className="h-4 w-full" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-16 w-full" />
+                  </CardContent>
+                  <CardFooter>
+                    <Skeleton className="h-10 w-full" />
+                  </CardFooter>
+                </Card>
+              ))
+            ) : purchasedAgents.length > 0 ? (
+              purchasedAgents.map((purchased) => {
+                // Make sure we can handle both id and _id
+                const purchasedId = purchased.id || purchased._id;
+                const agentDetails = agents.find(a => a._id === purchased.agent_id) || {
+                  name: `Agent ${purchased.agent_id.slice(0, 5)}...`,
+                  description: "AI agent",
+                  title: "Custom Agent"
+                };
+                
+                return (
+                  <Card key={purchasedId} className="agent-card h-full flex flex-col">
+                    <CardHeader>
+                      <div className="flex justify-between items-start">
+                        <CardTitle>{agentDetails.name}</CardTitle>
+                        <Badge className="capitalize">{purchased.plan}</Badge>
+                      </div>
+                      <CardDescription>
+                        {agentDetails.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-1">
+                      <div>
+                        <p className="text-sm text-muted-foreground">
+                          {agentDetails.title}
+                        </p>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="flex gap-2">
+                      <Button 
+                        className="flex-1" 
+                        variant="outline"
+                        onClick={() => handleImplement(purchased.agent_id)}
+                      >
+                        Implement
+                      </Button>
+                      <Button 
+                        className="flex-1"
+                        onClick={() => {
+                          setSelectedPurchasedAgent(purchasedId);
+                          setUploadDialogOpen(true);
+                        }}
+                      >
+                        Train
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                );
+              })
+            ) : (
+              <div className="col-span-3 py-12 text-center">
+                <h3 className="text-lg font-medium mb-2">No agents subscribed yet</h3>
+                <p className="text-muted-foreground mb-4">Subscribe to your first agent from the marketplace</p>
+                <Button onClick={navToMarketplace}>
+                  Browse Marketplace
+                </Button>
+              </div>
+            )}
+          </div>
+        </TabsContent>
         
         <TabsContent value="marketplace" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -178,81 +263,6 @@ const Agents = () => {
                   </CardFooter>
                 </Card>
               ))
-            )}
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="my-agents" className="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {isLoading ? (
-              Array(2).fill(0).map((_, i) => (
-                <Card key={i} className="glass-card h-64">
-                  <CardHeader>
-                    <Skeleton className="h-8 w-3/4 mb-2" />
-                    <Skeleton className="h-4 w-full" />
-                  </CardHeader>
-                  <CardContent>
-                    <Skeleton className="h-16 w-full" />
-                  </CardContent>
-                  <CardFooter>
-                    <Skeleton className="h-10 w-full" />
-                  </CardFooter>
-                </Card>
-              ))
-            ) : purchasedAgents.length > 0 ? (
-              purchasedAgents.map((purchased) => {
-                const agentDetails = agents.find(a => a._id === purchased.agent_id) || {
-                  name: `Agent ${purchased.agent_id.slice(0, 5)}...`,
-                  description: "AI agent",
-                  title: "Custom Agent"
-                };
-                
-                return (
-                  <Card key={purchased._id || purchased.id} className="agent-card h-full flex flex-col">
-                    <CardHeader>
-                      <div className="flex justify-between items-start">
-                        <CardTitle>{agentDetails.name}</CardTitle>
-                        <Badge className="capitalize">{purchased.plan}</Badge>
-                      </div>
-                      <CardDescription>
-                        {agentDetails.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex-1">
-                      <div>
-                        <p className="text-sm text-muted-foreground">
-                          Purchased on: {new Date(purchased.createdAt).toLocaleDateString()}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Expires on: {new Date(purchased.expiresAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex gap-2">
-                      <Button className="flex-1" variant="outline">
-                        Implement
-                      </Button>
-                      <Button 
-                        className="flex-1"
-                        onClick={() => {
-                          setSelectedPurchasedAgent(purchased._id || purchased.id);
-                          setUploadDialogOpen(true);
-                        }}
-                      >
-                        Manage
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                );
-              })
-            ) : (
-              <div className="col-span-3 py-12 text-center">
-                <h3 className="text-lg font-medium mb-2">No agents subscribed yet</h3>
-                <p className="text-muted-foreground mb-4">Subscribe to your first agent from the marketplace</p>
-                <Button onClick={navToMarketplace}>
-                  Browse Marketplace
-                </Button>
-              </div>
             )}
           </div>
         </TabsContent>

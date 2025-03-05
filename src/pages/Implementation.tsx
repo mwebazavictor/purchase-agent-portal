@@ -1,5 +1,5 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,7 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 const Implementation = () => {
   const { user } = useAuth();
-  const [selectedAgent, setSelectedAgent] = useState<string>("agent1");
+  const location = useLocation();
+  const initialSelectedAgent = location.state?.selectedAgent || "agent1";
+  const [selectedAgent, setSelectedAgent] = useState<string>(initialSelectedAgent);
   const [copied, setCopied] = useState<{ iframe: boolean; cdn: boolean }>({
     iframe: false,
     cdn: false,
@@ -20,6 +22,13 @@ const Implementation = () => {
     { id: "agent1", name: "Customer Support Agent" },
     { id: "agent2", name: "Sales Assistant" },
   ];
+
+  // Set the selected agent based on navigation state
+  useEffect(() => {
+    if (location.state?.selectedAgent) {
+      setSelectedAgent(location.state.selectedAgent);
+    }
+  }, [location.state]);
 
   const handleCopy = (type: "iframe" | "cdn") => {
     const codeElement = document.getElementById(`${type}-code`);
