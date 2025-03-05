@@ -1,12 +1,11 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { 
   Card, 
   CardContent, 
-  CardDescription, 
   CardHeader, 
-  CardTitle 
+  CardTitle, 
+  CardDescription 
 } from "@/components/ui/card";
 import { 
   Select, 
@@ -33,161 +32,144 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { 
   Pencil, 
-  Trash2, 
   Check, 
-  X, 
-  Plus 
+  Trash2, 
+  CirclePlus, 
+  Loader2, 
+  Info, 
+  AlertCircle 
 } from "lucide-react";
-import { queryApi, purchasedAgentApi } from "@/lib/api";
+import { purchasedAgentApi, queryApi } from "@/lib/api";
 import { PurchasedAgent, Query } from "@/lib/types";
 import { toast } from "sonner";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const SampleQuestions = () => {
   const { user } = useAuth();
   const [purchasedAgents, setPurchasedAgents] = useState<PurchasedAgent[]>([]);
   const [selectedAgentId, setSelectedAgentId] = useState<string>("");
   const [queries, setQueries] = useState<Query[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [editingQuery, setEditingQuery] = useState<Query | null>(null);
-  const [queryText, setQueryText] = useState<string>("");
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState<boolean>(false);
-  const [queryToDelete, setQueryToDelete] = useState<string>("");
-  const [addDialogOpen, setAddDialogOpen] = useState<boolean>(false);
-  const [newQuery, setNewQuery] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [editingQueryId, setEditingQueryId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState("");
+  const [newQueryText, setNewQueryText] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
-  // Fetch purchased agents
-  useEffect(() => {
-    const fetchPurchasedAgents = async () => {
-      if (!user?.company_id) return;
+  const fetchPurchasedAgents = useCallback(async () => {
+    if (!user?.company_id) return;
+    
+    try {
+      const response = await purchasedAgentApi.getPurchasedAgents(user.company_id);
+      const purchased = Array.isArray(response) ? response : 
+                       (response.purchasedAgents && Array.isArray(response.purchasedAgents)) ? 
+                       response.purchasedAgents : [];
+      setPurchasedAgents(purchased);
       
-      try {
-        const response = await purchasedAgentApi.getPurchasedAgents(user.company_id);
-        const purchased = Array.isArray(response) ? response : 
-                         (response.purchasedAgents && Array.isArray(response.purchasedAgents)) ? 
-                         response.purchasedAgents : [];
-        setPurchasedAgents(purchased);
-        
-        // Set first agent as selected by default if there are any
-        if (purchased.length > 0) {
-          const firstAgentId = purchased[0].id || purchased[0]._id;
-          setSelectedAgentId(firstAgentId);
-        }
-      } catch (error) {
-        console.error("Error fetching purchased agents:", error);
-        toast.error("Failed to load agents");
+      // Set first agent as selected by default if there are any
+      if (purchased.length > 0) {
+        const firstAgentId = purchased[0].id || purchased[0]._id;
+        setSelectedAgentId(firstAgentId);
       }
-    };
-
-    fetchPurchasedAgents();
+    } catch (error) {
+      console.error("Error fetching purchased agents:", error);
+      toast.error("Failed to load agents");
+    }
   }, [user]);
 
-  // Fetch queries for selected agent
-  useEffect(() => {
-    const fetchQueries = async () => {
-      if (!selectedAgentId) return;
-      
-      setLoading(true);
-      try {
-        const response = await queryApi.getQueries(selectedAgentId);
-        setQueries(response);
-      } catch (error) {
-        console.error("Error fetching queries:", error);
-        toast.error("Failed to load sample questions");
-        setQueries([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchQueries = useCallback(async () => {
+    if (!selectedAgentId) return;
+    
+    setIsLoading(true);
+    try {
+      setError(null);
+      const data = await queryApi.getQueries(selectedAgentId);
+      setQueries(data || []);
+    } catch (error) {
+      setError("Failed to load queries. Please try again.");
+      toast.error("Failed to load queries");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedAgentId]);
 
+  useEffect(() => {
+    fetchPurchasedAgents();
+  }, [fetchPurchasedAgents]);
+
+  useEffect(() => {
     if (selectedAgentId) {
       fetchQueries();
     }
-  }, [selectedAgentId]);
+  }, [selectedAgentId, fetchQueries]);
 
   const handleAgentChange = (value: string) => {
     setSelectedAgentId(value);
   };
 
-  const handleEditStart = (query: Query) => {
-    setEditingQuery(query);
-    setQueryText(query.query);
+  const handleEdit = (queryId: string, currentText: string) => {
+    setEditingQueryId(queryId);
+    setEditingText(currentText);
   };
 
-  const handleEditCancel = () => {
-    setEditingQuery(null);
-    setQueryText("");
+  const handleCancelEdit = () => {
+    setEditingQueryId(null);
+    setEditingText("");
   };
 
-  const handleEditSave = async () => {
-    if (!editingQuery) return;
+  const handleSaveEdit = async () => {
+    if (!editingQueryId || !editingText.trim()) {
+      toast.error("Query text cannot be empty");
+      return;
+    }
     
     try {
-      await queryApi.updateQuery(editingQuery.id, { query: queryText });
-      
-      // Update local state
-      setQueries(prev => 
-        prev.map(q => q.id === editingQuery.id ? { ...q, query: queryText } : q)
+      const updatedQuery = await queryApi.updateQuery(editingQueryId, { query: editingText });
+      setQueries((prev) =>
+        prev.map((q) => (q.id === editingQueryId ? updatedQuery : q))
       );
-      
-      toast.success("Question updated successfully");
-      setEditingQuery(null);
-      setQueryText("");
+      toast.success("Query updated successfully");
+      setEditingQueryId(null);
+      setEditingText("");
     } catch (error) {
-      console.error("Error updating query:", error);
-      toast.error("Failed to update question");
+      toast.error("Failed to update query");
     }
   };
 
-  const openDeleteConfirm = (id: string) => {
-    setQueryToDelete(id);
-    setDeleteConfirmOpen(true);
-  };
-
-  const handleDelete = async () => {
-    if (!queryToDelete) return;
-    
+  const handleDelete = async (queryId: string) => {
     try {
-      await queryApi.deleteQuery(queryToDelete);
-      
-      // Update local state
-      setQueries(prev => prev.filter(q => q.id !== queryToDelete));
-      
-      toast.success("Question deleted successfully");
-      setDeleteConfirmOpen(false);
-      setQueryToDelete("");
+      await queryApi.deleteQuery(queryId);
+      setQueries((prev) => prev.filter((q) => q.id !== queryId));
+      toast.success("Query deleted successfully");
     } catch (error) {
-      console.error("Error deleting query:", error);
-      toast.error("Failed to delete question");
+      toast.error("Failed to delete query");
     }
   };
 
   const handleAddQuery = async () => {
-    if (!selectedAgentId || !newQuery || !user?.company_id) return;
+    if (!newQueryText.trim() || !selectedAgentId || !user?.company_id) {
+      toast.error("Please enter a query");
+      return;
+    }
     
     try {
       const selectedAgent = purchasedAgents.find(a => (a.id === selectedAgentId || a._id === selectedAgentId));
       if (!selectedAgent) return;
       
-      const response = await queryApi.createQuery({
-        query: newQuery,
+      const newQuery = await queryApi.createQuery({
+        query: newQueryText,
         company_id: user.company_id,
         agent_id: selectedAgent.agent_id,
         purchased_agent_id: selectedAgentId
       });
       
-      // Update local state
-      setQueries(prev => [...prev, response]);
-      
-      toast.success("Question added successfully");
-      setAddDialogOpen(false);
-      setNewQuery("");
+      setQueries((prev) => [...prev, newQuery]);
+      setNewQueryText("");
+      toast.success("Query added successfully");
     } catch (error) {
-      console.error("Error adding query:", error);
-      toast.error("Failed to add question");
+      toast.error("Failed to add query");
     }
   };
 
@@ -203,118 +185,182 @@ const SampleQuestions = () => {
         <p className="text-muted-foreground">Manage training questions for your AI agents</p>
       </div>
       
-      <Card className="glass-card">
-        <CardHeader>
-          <CardTitle>Manage Questions</CardTitle>
-          <CardDescription>
-            Create, edit and delete sample questions that your agents will be trained on
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+      <Card className="w-full bg-white/85 backdrop-blur-md border border-indigo-100 shadow-lg rounded-xl">
+        <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-xl">
           <div className="flex items-center justify-between">
-            <div className="w-64">
-              <Select value={selectedAgentId} onValueChange={handleAgentChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select an agent" />
-                </SelectTrigger>
-                <SelectContent>
-                  {purchasedAgents.map((agent) => (
-                    <SelectItem 
-                      key={agent.id || agent._id} 
-                      value={agent.id || agent._id || ""}
-                    >
-                      {agent.name || agent.agent?.name || `Agent ${agent.agent_id.slice(0, 5)}...`}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div>
+              <CardTitle className="text-xl font-bold flex items-center">
+                Sample Questions Management
+              </CardTitle>
+              <CardDescription className="text-indigo-100 mt-1">
+                Create, edit, and manage sample questions for your agents
+              </CardDescription>
             </div>
-            
-            <Button 
-              onClick={() => setAddDialogOpen(true)} 
-              disabled={!selectedAgentId}
-              className="flex items-center gap-1"
-            >
-              <Plus size={16} />
-              Add Question
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="sm" variant="ghost" className="text-white hover:text-white hover:bg-white/20">
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="left" className="max-w-sm">
+                  <p>Add sample questions for users. Make them related to what your agent does. Maximum is <strong>3</strong></p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
-          
-          {loading ? (
-            <div className="space-y-4">
-              {Array(3).fill(0).map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
-              ))}
-            </div>
-          ) : queries.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground mb-4">
-                No sample questions found for this agent
-              </p>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="mb-4 flex gap-2">
+            <Select value={selectedAgentId} onValueChange={handleAgentChange}>
+              <SelectTrigger className="w-64">
+                <SelectValue placeholder="Select an agent" />
+              </SelectTrigger>
+              <SelectContent>
+                {purchasedAgents.map((agent) => (
+                  <SelectItem 
+                    key={agent.id || agent._id} 
+                    value={agent.id || agent._id || ""}
+                  >
+                    {agent.name || agent.agent?.name || `Agent ${agent.agent_id.slice(0, 5)}...`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <div className="flex gap-2 flex-1">
+              <Input
+                type="text"
+                placeholder="Add a new question for your agent..."
+                value={newQueryText}
+                onChange={(e) => setNewQueryText(e.target.value)}
+                className="flex-1 border-indigo-200 focus-visible:ring-indigo-500"
+                disabled={!selectedAgentId}
+              />
               <Button 
-                onClick={() => setAddDialogOpen(true)}
-                variant="outline"
+                onClick={handleAddQuery} 
+                disabled={!selectedAgentId}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white"
               >
-                Add your first question
+                <CirclePlus className="h-4 w-4 mr-2" />
+                Add
               </Button>
             </div>
+          </div>
+
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center text-red-600">
+              <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0" />
+              <p className="text-sm">{error}</p>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={fetchQueries} 
+                className="ml-auto text-red-600 hover:text-red-700 hover:bg-red-100"
+              >
+                Retry
+              </Button>
+            </div>
+          )}
+
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 text-indigo-600 animate-spin mb-4" />
+              <p className="text-indigo-600 text-sm">Loading queries...</p>
+            </div>
+          ) : queries.length === 0 ? (
+            <div className="text-center py-12 border border-dashed border-indigo-200 rounded-lg bg-indigo-50/50">
+              <Info className="h-10 w-10 text-indigo-400 mx-auto mb-3" />
+              <h3 className="text-indigo-700 font-medium mb-1">No queries yet</h3>
+              <p className="text-indigo-500 text-sm max-w-md mx-auto">
+                Add your first query to start training your agent
+              </p>
+            </div>
           ) : (
-            <div className="border rounded-lg overflow-hidden">
+            <div className="rounded-lg border border-indigo-100 overflow-hidden">
               <Table>
-                <TableHeader>
+                <TableHeader className="bg-indigo-50">
                   <TableRow>
-                    <TableHead className="w-[80%]">Question</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="text-indigo-700 font-semibold w-full">Question</TableHead>
+                    <TableHead className="text-indigo-700 font-semibold text-right w-28">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {queries.map((query) => (
-                    <TableRow key={query.id}>
+                    <TableRow key={query.id} className="hover:bg-indigo-50/50 transition-colors">
                       <TableCell>
-                        {editingQuery?.id === query.id ? (
+                        {editingQueryId === query.id ? (
                           <Input
-                            value={queryText}
-                            onChange={(e) => setQueryText(e.target.value)}
-                            className="w-full"
+                            type="text"
+                            value={editingText}
+                            onChange={(e) => setEditingText(e.target.value)}
+                            className="border-indigo-200 focus-visible:ring-indigo-500"
+                            autoFocus
                           />
                         ) : (
-                          <span>{query.query}</span>
+                          <div className="flex items-center">
+                            <Badge variant="outline" className="mr-2 bg-indigo-100 text-indigo-700 border-indigo-200">Q</Badge>
+                            <span>{query.query}</span>
+                          </div>
                         )}
                       </TableCell>
                       <TableCell className="text-right">
-                        {editingQuery?.id === query.id ? (
-                          <div className="flex justify-end gap-2">
+                        {editingQueryId === query.id ? (
+                          <div className="flex items-center justify-end space-x-2">
                             <Button
-                              size="icon"
-                              variant="ghost"
-                              onClick={handleEditCancel}
+                              onClick={handleSaveEdit}
+                              variant="outline"
+                              size="sm"
+                              className="text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700"
                             >
-                              <X size={16} />
+                              <Check className="h-4 w-4" />
                             </Button>
                             <Button
-                              size="icon"
-                              onClick={handleEditSave}
+                              onClick={handleCancelEdit}
+                              variant="outline"
+                              size="sm"
+                              className="text-gray-600 border-gray-200 hover:bg-gray-50"
                             >
-                              <Check size={16} />
+                              Cancel
                             </Button>
                           </div>
                         ) : (
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              onClick={() => handleEditStart(query)}
-                            >
-                              <Pencil size={16} />
-                            </Button>
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                              onClick={() => openDeleteConfirm(query.id)}
-                            >
-                              <Trash2 size={16} />
-                            </Button>
+                          <div className="flex items-center justify-end space-x-2">
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    onClick={() => handleEdit(query.id, query.query)}
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Edit Query</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    onClick={() => {
+                                      if (window.confirm("Are you sure you want to delete this query?")) {
+                                        handleDelete(query.id);
+                                      }
+                                    }}
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Delete Query</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
                         )}
                       </TableCell>
@@ -326,54 +372,6 @@ const SampleQuestions = () => {
           )}
         </CardContent>
       </Card>
-      
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Question</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this question? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleDelete}>
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Add Question Dialog */}
-      <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add Sample Question</DialogTitle>
-            <DialogDescription>
-              Add a new sample question for {getAgentName(selectedAgentId)}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <Textarea
-              placeholder="Enter your sample question here..."
-              value={newQuery}
-              onChange={(e) => setNewQuery(e.target.value)}
-              className="min-h-24"
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setAddDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleAddQuery} disabled={!newQuery.trim()}>
-              Add Question
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
