@@ -79,7 +79,7 @@ const Implementation = () => {
 
   const cdnCode = `<!-- Add this code to your website -->
  <Script 
-src="https://ai-customer-support-production.up.railway.app/api/chat-script?companyId=67c55bd3cd3a1f19e7341979"
+src="https://ai-customer-support-production.up.railway.app/api/chat-script?companyId=${user?.company_id}"
 strategy="afterInteractive"
             />`;
 
