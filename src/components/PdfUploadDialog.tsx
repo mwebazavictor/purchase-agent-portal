@@ -46,7 +46,8 @@ const PdfUploadDialog = ({ open, onOpenChange, purchasedAgentId }: PdfUploadDial
   };
 
   const handleSubmit = async () => {
-    if (!file || !user?.company_id) {
+    console.log(user);
+    if (!file || !user?.Company_id) {
       toast.error("Missing file or user information");
       return;
     }
@@ -66,20 +67,24 @@ const PdfUploadDialog = ({ open, onOpenChange, purchasedAgentId }: PdfUploadDial
 
     try {
       // Encode file content to base64 if needed
-      const payload = {
+      /* const payload = {
         document: fileContent,
         user_id: user.id,
-        company_id: user.company_id,
-        agent_id: purchasedAgentId
-      };
+        company_id: user.Company_id,
+      }; */
+
+      const formData = new FormData();
+      formData.append('document', file);
+      formData.append('user_id', user.id);
+      formData.append('company_id', user.Company_id);
+      formData.append('purchased_agent_id', purchasedAgentId);
 
       const response = await fetch('https://multi-agents-production-aace.up.railway.app/api/v1/upload', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(payload)
+        body: formData
       });
 
       if (!response.ok) {

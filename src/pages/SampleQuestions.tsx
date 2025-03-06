@@ -287,9 +287,9 @@ const SampleQuestions = () => {
                 </TableHeader>
                 <TableBody>
                   {queries.map((query) => (
-                    <TableRow key={query.id} className="hover:bg-indigo-50/50 transition-colors">
+                    <TableRow key={query._id} className="hover:bg-indigo-50/50 transition-colors">
                       <TableCell>
-                        {editingQueryId === query.id ? (
+                        {editingQueryId === query._id ? (
                           <Input
                             type="text"
                             value={editingText}
@@ -305,7 +305,7 @@ const SampleQuestions = () => {
                         )}
                       </TableCell>
                       <TableCell className="text-right">
-                        {editingQueryId === query.id ? (
+                        {editingQueryId === query._id ? (
                           <div className="flex items-center justify-end space-x-2">
                             <Button
                               onClick={handleSaveEdit}
@@ -330,7 +330,7 @@ const SampleQuestions = () => {
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
-                                    onClick={() => handleEdit(query.id, query.query)}
+                                    onClick={() => handleEdit(query._id, query.query)}
                                     variant="ghost"
                                     size="sm"
                                     className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
@@ -348,7 +348,7 @@ const SampleQuestions = () => {
                                   <Button
                                     onClick={() => {
                                       if (window.confirm("Are you sure you want to delete this query?")) {
-                                        handleDelete(query.id);
+                                        handleDelete(query._id);
                                       }
                                     }}
                                     variant="ghost"
