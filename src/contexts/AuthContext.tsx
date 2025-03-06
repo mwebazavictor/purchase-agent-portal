@@ -10,7 +10,7 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => void; // Changed from Promise<void> to void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -76,18 +76,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const logout = async () => {
-    setIsLoading(true);
-    try {
-      await authApi.logout();
-      setUser(null);
-      toast.success("Logged out successfully");
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout error:", error);
-    } finally {
-      setIsLoading(false);
-    }
+  // Frontend-only logout solution
+  const logout = () => {
+    // Clear user data
+    setUser(null);
+    
+    // Clear tokens from localStorage
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("refreshToken");
+    
+    // Show success message
+    toast.success("Logged out successfully");
+    
+    // Redirect to login page
+    navigate("/login");
   };
 
   return (

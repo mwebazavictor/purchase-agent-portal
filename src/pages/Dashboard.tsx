@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { purchasedAgentApi } from "@/lib/api";
 import { PurchasedAgent } from "@/lib/types";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { Activity, ShoppingBag, ArrowRight, BookOpen } from "lucide-react";
+import { Activity, ShoppingBag, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
@@ -58,9 +58,11 @@ const Dashboard = () => {
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground">Welcome back, {user?.name}</p>
         </div>
-        <Button as={Link} to="/agents">
-          <ShoppingBag className="mr-2" size={16} />
-          Purchase Agents
+        <Button asChild>
+          <Link to="/agents?tab=marketplace">
+            <ShoppingBag className="mr-2" size={16} />
+            Purchase Agents
+          </Link>
         </Button>
       </div>
 
@@ -127,8 +129,10 @@ const Dashboard = () => {
             ) : (
               <div className="flex flex-col items-center justify-center h-64 text-center">
                 <p className="text-muted-foreground mb-4">No agent subscriptions found.</p>
-                <Button variant="outline" size="sm" as={Link} to="/agents">
-                  Purchase your first agent
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/agents?tab=marketplace">
+                    Purchase your first agent
+                  </Link>
                 </Button>
               </div>
             )}

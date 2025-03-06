@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -40,6 +41,11 @@ const Sidebar = () => {
     },
   ];
 
+  // Handle logout click
+  const handleLogout = () => {
+    logout(); // Call the frontend-only logout method
+  };
+
   return (
     <div 
       className={cn(
@@ -49,7 +55,7 @@ const Sidebar = () => {
     >
       <div className="flex justify-between items-center p-4 border-b">
         {!collapsed && (
-          <h1 className="text-xl font-medium">Agent Portal</h1>
+          <h1 className="text-xl font-medium">Tubayo Business Support</h1>
         )}
         <button 
           onClick={() => setCollapsed(!collapsed)}
@@ -87,7 +93,7 @@ const Sidebar = () => {
           </div>
         )}
         <button 
-          onClick={() => logout()}
+          onClick={handleLogout}
           className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
         >
           <LogOut size={20} />
