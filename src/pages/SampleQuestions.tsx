@@ -22,18 +22,10 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle 
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { 
   Pencil, 
   Check, 
@@ -173,11 +165,6 @@ const SampleQuestions = () => {
     }
   };
 
-  const getAgentName = (id: string) => {
-    const agent = purchasedAgents.find(a => a.id === id || a._id === id);
-    return agent?.name || agent?.agent?.name || "Unknown Agent";
-  };
-
   return (
     <div className="space-y-8 animate-fade-in">
       <div>
@@ -185,13 +172,11 @@ const SampleQuestions = () => {
         <p className="text-muted-foreground">Manage training questions for your AI agents</p>
       </div>
       
-      <Card className="w-full bg-white/85 backdrop-blur-md border border-indigo-100 shadow-lg rounded-xl">
+      <Card className="glass-card">
         <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-xl">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-xl font-bold flex items-center">
-                Sample Questions Management
-              </CardTitle>
+              <CardTitle className="text-xl font-bold">Sample Questions Management</CardTitle>
               <CardDescription className="text-indigo-100 mt-1">
                 Create, edit, and manage sample questions for your agents
               </CardDescription>
@@ -203,8 +188,8 @@ const SampleQuestions = () => {
                     <Info className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="left" className="max-w-sm">
-                  <p>Add sample questions for users. Make them related to what your agent does. Maximum is <strong>3</strong></p>
+                <TooltipContent side="left">
+                  Add sample questions for users. Make them related to what your agent does.
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -234,7 +219,7 @@ const SampleQuestions = () => {
                 placeholder="Add a new question for your agent..."
                 value={newQueryText}
                 onChange={(e) => setNewQueryText(e.target.value)}
-                className="flex-1 border-indigo-200 focus-visible:ring-indigo-500"
+                className="flex-1"
                 disabled={!selectedAgentId}
               />
               <Button 
@@ -277,98 +262,96 @@ const SampleQuestions = () => {
               </p>
             </div>
           ) : (
-            <div className="rounded-lg border border-indigo-100 overflow-hidden">
-              <Table>
-                <TableHeader className="bg-indigo-50">
-                  <TableRow>
-                    <TableHead className="text-indigo-700 font-semibold w-full">Question</TableHead>
-                    <TableHead className="text-indigo-700 font-semibold text-right w-28">Actions</TableHead>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-full">Question</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {queries.map((query) => (
+                  <TableRow key={query.id}>
+                    <TableCell>
+                      {editingQueryId === query.id ? (
+                        <Input
+                          type="text"
+                          value={editingText}
+                          onChange={(e) => setEditingText(e.target.value)}
+                          className="border-indigo-200 focus-visible:ring-indigo-500"
+                          autoFocus
+                        />
+                      ) : (
+                        <div className="flex items-center">
+                          <Badge variant="outline" className="mr-2 bg-indigo-100 text-indigo-700 border-indigo-200">Q</Badge>
+                          <span>{query.query}</span>
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {editingQueryId === query.id ? (
+                        <div className="flex items-center justify-end space-x-2">
+                          <Button
+                            onClick={handleSaveEdit}
+                            variant="outline"
+                            size="sm"
+                            className="text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700"
+                          >
+                            <Check className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            onClick={handleCancelEdit}
+                            variant="outline"
+                            size="sm"
+                            className="text-gray-600 border-gray-200 hover:bg-gray-50"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-end space-x-2">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  onClick={() => handleEdit(query.id, query.query)}
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Edit Query</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  onClick={() => {
+                                    if (window.confirm("Are you sure you want to delete this query?")) {
+                                      handleDelete(query.id);
+                                    }
+                                  }}
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Delete Query</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      )}
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {queries.map((query) => (
-                    <TableRow key={query._id} className="hover:bg-indigo-50/50 transition-colors">
-                      <TableCell>
-                        {editingQueryId === query._id ? (
-                          <Input
-                            type="text"
-                            value={editingText}
-                            onChange={(e) => setEditingText(e.target.value)}
-                            className="border-indigo-200 focus-visible:ring-indigo-500"
-                            autoFocus
-                          />
-                        ) : (
-                          <div className="flex items-center">
-                            <Badge variant="outline" className="mr-2 bg-indigo-100 text-indigo-700 border-indigo-200">Q</Badge>
-                            <span>{query.query}</span>
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {editingQueryId === query._id ? (
-                          <div className="flex items-center justify-end space-x-2">
-                            <Button
-                              onClick={handleSaveEdit}
-                              variant="outline"
-                              size="sm"
-                              className="text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700"
-                            >
-                              <Check className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              onClick={handleCancelEdit}
-                              variant="outline"
-                              size="sm"
-                              className="text-gray-600 border-gray-200 hover:bg-gray-50"
-                            >
-                              Cancel
-                            </Button>
-                          </div>
-                        ) : (
-                          <div className="flex items-center justify-end space-x-2">
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    onClick={() => handleEdit(query._id, query.query)}
-                                    variant="ghost"
-                                    size="sm"
-                                    className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
-                                  >
-                                    <Pencil className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>Edit Query</TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                            
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    onClick={() => {
-                                      if (window.confirm("Are you sure you want to delete this query?")) {
-                                        handleDelete(query._id);
-                                      }
-                                    }}
-                                    variant="ghost"
-                                    size="sm"
-                                    className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>Delete Query</TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>

@@ -4,8 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { purchasedAgentApi } from "@/lib/api";
 import { PurchasedAgent } from "@/lib/types";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { Activity, ShoppingBag, BookOpen } from "lucide-react";
+import { Activity, ShoppingBag, BookOpen, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
@@ -20,7 +19,6 @@ const Dashboard = () => {
       if (user?.company_id) {
         try {
           const response = await purchasedAgentApi.getPurchasedAgents(user.company_id);
-          // Ensure we're getting an array of purchased agents
           const agents = Array.isArray(response) ? response : 
                         (response.purchasedAgents && Array.isArray(response.purchasedAgents)) ? 
                         response.purchasedAgents : [];
@@ -28,7 +26,7 @@ const Dashboard = () => {
           setPurchasedAgents(agents);
         } catch (error) {
           console.error("Error fetching purchased agents:", error);
-          setPurchasedAgents([]); // Set to empty array in case of error
+          setPurchasedAgents([]);
         } finally {
           setIsLoading(false);
         }
@@ -37,19 +35,6 @@ const Dashboard = () => {
 
     fetchData();
   }, [user]);
-
-  // Prepare chart data
-  const currentDate = new Date();
-  const chartData = purchasedAgents.map(agent => {
-    const expiryDate = new Date(agent.expiresAt);
-    const daysLeft = Math.max(0, Math.ceil((expiryDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)));
-    
-    return {
-      name: agent.name || agent.agent?.name || `Agent ${agent.agent_id.slice(0, 5)}...`,
-      daysLeft,
-      plan: agent.plan,
-    };
-  });
 
   return (
     <div className="space-y-8">
@@ -104,41 +89,7 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="glass-card lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Agent Subscription Status</CardTitle>
-            <CardDescription>Days remaining in your agent subscriptions</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <Skeleton className="h-64 w-full" />
-              </div>
-            ) : chartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 15 }}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip 
-                    contentStyle={{ background: "rgba(255, 255, 255, 0.8)", border: "none", borderRadius: "8px" }}
-                  />
-                  <Bar dataKey="daysLeft" fill="#6366f1" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-64 text-center">
-                <p className="text-muted-foreground mb-4">No agent subscriptions found.</p>
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/agents?tab=marketplace">
-                    Purchase your first agent
-                  </Link>
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="glass-card">
           <CardHeader>
             <CardTitle>Getting Started</CardTitle>
@@ -173,6 +124,46 @@ const Dashboard = () => {
                 </h3>
                 <p className="text-sm text-muted-foreground">
                   Follow the implementation guide to integrate your agent onto your website.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle>Frequently Asked Questions</CardTitle>
+            <CardDescription>Common questions about the platform</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-4">
+              <div className="p-4 border rounded-lg bg-muted/20">
+                <h3 className="font-medium flex items-center gap-2 mb-2">
+                  <HelpCircle size={16} className="text-primary" />
+                  What are AI Agents?
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  AI Agents are intelligent chatbots that can be trained to answer questions specific to your business.
+                </p>
+              </div>
+              
+              <div className="p-4 border rounded-lg bg-muted/20">
+                <h3 className="font-medium flex items-center gap-2 mb-2">
+                  <HelpCircle size={16} className="text-primary" />
+                  How do I train my agent?
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  You can train your agent by adding sample questions and uploading relevant documents in the Training section.
+                </p>
+              </div>
+              
+              <div className="p-4 border rounded-lg bg-muted/20">
+                <h3 className="font-medium flex items-center gap-2 mb-2">
+                  <HelpCircle size={16} className="text-primary" />
+                  How do I implement the agent on my website?
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Visit the Implementation page for step-by-step instructions on adding the agent to your website.
                 </p>
               </div>
             </div>
