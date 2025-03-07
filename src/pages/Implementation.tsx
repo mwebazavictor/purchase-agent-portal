@@ -78,10 +78,10 @@ const Implementation = () => {
 ></iframe>`;
 
   const cdnCode = `<!-- Add this code to your website -->
- <Script 
+ <script 
 src="https://ai-customer-support-production.up.railway.app/api/chat-script?companyId=${user?.company_id}"
 strategy="afterInteractive"
-            />`;
+></script>`;
 
   if (isLoading) {
     return (
