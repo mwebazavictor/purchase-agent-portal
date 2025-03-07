@@ -1,4 +1,3 @@
-
 // User types
 export interface User {
   id: string;
@@ -41,6 +40,7 @@ export interface PurchasedAgent {
 }
 
 export interface Query {
+  _id: string;
   id: string;
   query: string;
   company_id: string;
@@ -66,4 +66,3 @@ export interface RegisterData {
   phone: string;
   role: "admin";
 }
-
