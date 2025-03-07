@@ -1,7 +1,7 @@
-
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ChevronRight, Zap, Shield, Brain, Users, Rocket, ArrowRight } from "lucide-react";
+import { ChevronRight, Shield, Brain, Users, Rocket, ArrowRight, Zap } from "lucide-react";
+import AnimatedLogo from "@/components/AnimatedLogo";
 
 const Landing = () => {
   return (
@@ -44,12 +44,8 @@ const Landing = () => {
             </div>
           </div>
           <div className="md:w-1/2 glass-card rounded-xl overflow-hidden">
-            <div className="bg-primary/5 p-6 md:p-10">
-              <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center">
-                <Rocket className="w-16 h-16 text-primary/70" />
-                <div className="absolute -bottom-2 -right-2 w-32 h-32 bg-primary/10 rounded-full blur-2xl"></div>
-                <div className="absolute -top-4 -left-4 w-32 h-32 bg-primary/10 rounded-full blur-xl"></div>
-              </div>
+            <div className="bg-primary/5 p-6 md:p-10 h-64 md:h-80">
+              <AnimatedLogo />
             </div>
           </div>
         </div>

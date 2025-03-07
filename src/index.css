@@ -118,3 +118,30 @@
     @apply bg-gradient-to-r from-primary via-primary/90 to-primary/80 bg-clip-text text-transparent;
   }
 }
+
+/* SVG Animations for the AnimatedLogo component */
+@keyframes swirl {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes orbit {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(100px, 0) rotate(360deg); }
+}
+@keyframes orbitReverse {
+  0% { transform: translate(0, 0) rotate(45deg); }
+  100% { transform: translate(-80px, 0) rotate(-315deg); }
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+@keyframes pulseText {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+@keyframes ripple {
+  0% { r: 20; opacity: 0.7; }
+  100% { r: 60; opacity: 0; }
+}

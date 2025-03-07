@@ -95,6 +95,31 @@ export default {
 				'float': {
 					'0%, 100%': { transform: 'translateY(0)' },
 					'50%': { transform: 'translateY(-5px)' }
+				},
+				'swirl': {
+					'0%': { transform: 'rotate(0deg)' },
+					'100%': { transform: 'rotate(360deg)' }
+				},
+				'orbit': {
+					'0%': { transform: 'translate(0, 0) rotate(0deg)' },
+					'100%': { transform: 'translate(100px, 0) rotate(360deg)' }
+				},
+				'orbitReverse': {
+					'0%': { transform: 'translate(0, 0) rotate(45deg)' },
+					'100%': { transform: 'translate(-80px, 0) rotate(-315deg)' }
+				},
+				'bounce': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-20px)' }
+				},
+				'pulseText': {
+					'0%': { transform: 'scale(1)' },
+					'50%': { transform: 'scale(1.1)' },
+					'100%': { transform: 'scale(1)' }
+				},
+				'ripple': {
+					'0%': { r: '20', opacity: '0.7' },
+					'100%': { r: '60', opacity: '0' }
 				}
 			},
 			animation: {
@@ -106,7 +131,13 @@ export default {
 				'slide-in': 'slide-in 0.3s ease-out',
 				'slide-out': 'slide-out 0.3s ease-out',
 				'pulse-gentle': 'pulse-gentle 2s ease-in-out infinite',
-				'float': 'float 3s ease-in-out infinite'
+				'float': 'float 3s ease-in-out infinite',
+				'swirl': 'swirl 10s infinite linear',
+				'orbit': 'orbit 6s infinite linear',
+				'orbitReverse': 'orbitReverse 4s infinite linear',
+				'bounce': 'bounce 2s infinite',
+				'pulseText': 'pulseText 3s infinite',
+				'ripple': 'ripple 5s infinite'
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
