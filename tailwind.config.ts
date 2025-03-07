@@ -91,6 +91,10 @@ export default {
 				'pulse-gentle': {
 					'0%, 100%': { opacity: '1' },
 					'50%': { opacity: '0.8' }
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-5px)' }
 				}
 			},
 			animation: {
@@ -101,7 +105,12 @@ export default {
 				'scale-in': 'scale-in 0.3s ease-out',
 				'slide-in': 'slide-in 0.3s ease-out',
 				'slide-out': 'slide-out 0.3s ease-out',
-				'pulse-gentle': 'pulse-gentle 2s ease-in-out infinite'
+				'pulse-gentle': 'pulse-gentle 2s ease-in-out infinite',
+				'float': 'float 3s ease-in-out infinite'
+			},
+			backgroundImage: {
+				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+				'tech-pattern': 'linear-gradient(to right, rgba(94, 84, 255, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(94, 84, 255, 0.1) 1px, transparent 1px)'
 			}
 		}
 	},
