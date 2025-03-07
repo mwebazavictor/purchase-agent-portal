@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,7 @@ import PdfUploadDialog from "@/components/PdfUploadDialog";
 
 const Agents = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [purchasedAgents, setPurchasedAgents] = useState<PurchasedAgent[]>([]);
@@ -26,6 +26,16 @@ const Agents = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedPurchasedAgent, setSelectedPurchasedAgent] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<string>("my-agents");
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const tabParam = searchParams.get('tab');
+    
+    if (tabParam === 'marketplace') {
+      setActiveTab("marketplace");
+    }
+  }, [location]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,10 +102,7 @@ const Agents = () => {
   };
 
   const navToMarketplace = () => {
-    const marketplaceTab = document.querySelector('[data-value="marketplace"]') as HTMLElement;
-    if (marketplaceTab) {
-      marketplaceTab.click();
-    }
+    setActiveTab("marketplace");
   };
 
   const handleImplement = (agentId: string) => {
@@ -109,10 +116,10 @@ const Agents = () => {
         <p className="text-muted-foreground">Browse and manage your AI agents</p>
       </div>
 
-      <Tabs defaultValue="my-agents" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList>
-          <TabsTrigger value="my-agents" data-value="my-agents">My Agents</TabsTrigger>
-          <TabsTrigger value="marketplace" data-value="marketplace">Marketplace</TabsTrigger>
+          <TabsTrigger value="my-agents">My Agents</TabsTrigger>
+          <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
         </TabsList>
         
         <TabsContent value="my-agents" className="mt-6">
@@ -134,7 +141,6 @@ const Agents = () => {
               ))
             ) : purchasedAgents.length > 0 ? (
               purchasedAgents.map((purchased) => {
-                // Make sure we can handle both id and _id
                 const purchasedId = purchased.id || purchased._id;
                 const agentDetails = agents.find(a => a._id === purchased.agent_id) || {
                   name: `Agent ${purchased.agent_id.slice(0, 5)}...`,
