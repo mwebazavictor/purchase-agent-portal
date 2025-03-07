@@ -2,24 +2,18 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ChevronRight, Shield, Brain, Users, Rocket, ArrowRight, Zap } from "lucide-react";
 import AnimatedLogo from "@/components/AnimatedLogo";
+import TranslucentNavbar from "@/components/TranslucentNavbar";
 
 const Landing = () => {
   return (
     <div className="min-h-screen bg-background">
+      {/* Translucent Navbar */}
+      <TranslucentNavbar />
+      
       {/* Hero Section */}
       <header className="container mx-auto px-4 py-10 md:py-20">
-        <div className="flex justify-between items-center mb-16">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-            TAI AGENT SUITE
-          </h2>
-          <div className="space-x-2">
-            <Link to="/login">
-              <Button variant="outline">Log in</Button>
-            </Link>
-            <Link to="/register">
-              <Button>Get Started</Button>
-            </Link>
-          </div>
+        <div className="pt-16 mb-16">
+          {/* This empty div creates space for the fixed navbar */}
         </div>
         
         <div className="flex flex-col md:flex-row gap-12 items-center">
