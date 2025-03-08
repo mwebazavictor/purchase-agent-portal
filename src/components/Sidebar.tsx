@@ -49,17 +49,17 @@ const Sidebar = () => {
   return (
     <div 
       className={cn(
-        "h-screen glass-card border-r transition-all duration-300 z-10 flex flex-col",
+        "h-screen glass-card border-r border-emerald-200/30 dark:border-emerald-800/30 transition-all duration-300 z-10 flex flex-col",
         collapsed ? "w-[70px]" : "w-[250px]"
       )}
     >
-      <div className="flex justify-between items-center p-4 border-b">
+      <div className="flex justify-between items-center p-4 border-b border-emerald-200/30 dark:border-emerald-800/30">
         {!collapsed && (
-          <h1 className="text-xl font-medium">Tubayo Business Support</h1>
+          <h1 className="text-xl font-medium text-emerald-800 dark:text-emerald-300">Tubayo Business Support</h1>
         )}
         <button 
           onClick={() => setCollapsed(!collapsed)}
-          className="p-1 rounded-full hover:bg-muted transition-colors"
+          className="p-1 rounded-full hover:bg-emerald-100/50 dark:hover:bg-emerald-800/50 transition-colors text-emerald-700 dark:text-emerald-400"
         >
           {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
         </button>
@@ -72,10 +72,10 @@ const Sidebar = () => {
               key={item.path}
               to={item.path}
               className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg transition-all hover:bg-muted",
+                "flex items-center gap-3 px-3 py-2 rounded-lg transition-all",
                 location.pathname === item.path 
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                  : "text-foreground hover:text-primary"
+                  ? "bg-emerald-600 text-white hover:bg-emerald-700" 
+                  : "text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100/50 dark:hover:bg-emerald-800/30 hover:text-emerald-700 dark:hover:text-emerald-200"
               )}
             >
               {item.icon}
@@ -85,16 +85,16 @@ const Sidebar = () => {
         </nav>
       </div>
       
-      <div className="p-4 border-t mt-auto">
+      <div className="p-4 border-t border-emerald-200/30 dark:border-emerald-800/30 mt-auto">
         {!collapsed && (
           <div className="flex flex-col mb-4">
-            <span className="text-sm font-medium">{user?.name}</span>
-            <span className="text-xs text-muted-foreground">{user?.email}</span>
+            <span className="text-sm font-medium text-emerald-800 dark:text-emerald-300">{user?.name}</span>
+            <span className="text-xs text-emerald-600 dark:text-emerald-500">{user?.email}</span>
           </div>
         )}
         <button 
           onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
+          className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-rose-600 hover:bg-rose-100/30 dark:hover:bg-rose-900/20 transition-colors"
         >
           <LogOut size={20} />
           {!collapsed && <span>Log Out</span>}

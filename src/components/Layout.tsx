@@ -15,7 +15,7 @@ const Layout = ({ children }: LayoutProps) => {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-screen overflow-hidden bg-nature-gradient">
       <Sidebar />
       <main className="flex-1 overflow-auto p-6 transition-all duration-300 animate-fade-in">
         {children}
