@@ -14,24 +14,24 @@
     --popover: 0 0% 100%;
     --popover-foreground: 224 71% 4%;
 
-    --primary: 240 60% 50%;
+    --primary: 260 73% 56%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 240 60% 50%;
+    --secondary: 262 83% 94%;
+    --secondary-foreground: 260 73% 56%;
 
     --muted: 220 14% 96%;
     --muted-foreground: 220 8% 46%;
 
-    --accent: 240 60% 95%;
-    --accent-foreground: 240 60% 50%;
+    --accent: 346 100% 69%;
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 240 60% 50%;
+    --ring: 260 73% 56%;
 
     --radius: 0.75rem;
   }
@@ -46,7 +46,7 @@
     --popover: 224 71% 4%;
     --popover-foreground: 210 20% 98%;
 
-    --primary: 240 60% 50%;
+    --primary: 260 73% 56%;
     --primary-foreground: 0 0% 98%;
 
     --secondary: 215 27% 16%;
@@ -55,7 +55,7 @@
     --muted: 215 27% 16%;
     --muted-foreground: 217 10% 64%;
 
-    --accent: 215 27% 16%;
+    --accent: 346 100% 69%;
     --accent-foreground: 210 20% 98%;
 
     --destructive: 0 62% 30%;
@@ -97,7 +97,7 @@
   }
 
   .page-header {
-    @apply text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent mb-4;
+    @apply text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4;
   }
 
   .page-subheader {
@@ -111,11 +111,11 @@
   }
 
   .tech-gradient {
-    @apply bg-gradient-to-r from-primary via-primary/90 to-primary/80;
+    @apply bg-gradient-to-r from-primary via-accent to-yellow-400;
   }
   
   .tech-gradient-text {
-    @apply bg-gradient-to-r from-primary via-primary/90 to-primary/80 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary via-accent to-yellow-400 bg-clip-text text-transparent;
   }
 }
 
