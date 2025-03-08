@@ -49,11 +49,7 @@ const ImageCarousel = () => {
               alt={image.alt}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex items-center justify-center">
-              <h2 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg">
-                TAI AGENT SUITE
-              </h2>
-            </div>
+            
           </div>
         ))}
       </div>
