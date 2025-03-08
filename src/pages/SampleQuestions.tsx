@@ -185,14 +185,14 @@ const SampleQuestions = () => {
         <p className="text-muted-foreground">Manage training questions for your AI agents</p>
       </div>
       
-      <Card className="w-full bg-white/85 backdrop-blur-md border border-indigo-100 shadow-lg rounded-xl">
-        <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-xl">
+      <Card className="w-full bg-white/85 backdrop-blur-md border border-green-100 shadow-lg rounded-xl">
+        <CardHeader className="bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-t-xl">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-xl font-bold flex items-center">
                 Sample Questions Management
               </CardTitle>
-              <CardDescription className="text-indigo-100 mt-1">
+              <CardDescription className="text-green-100 mt-1">
                 Create, edit, and manage sample questions for your agents
               </CardDescription>
             </div>
@@ -234,13 +234,13 @@ const SampleQuestions = () => {
                 placeholder="Add a new question for your agent..."
                 value={newQueryText}
                 onChange={(e) => setNewQueryText(e.target.value)}
-                className="flex-1 border-indigo-200 focus-visible:ring-indigo-500"
+                className="flex-1 border-green-200 focus-visible:ring-green-500"
                 disabled={!selectedAgentId}
               />
               <Button 
                 onClick={handleAddQuery} 
                 disabled={!selectedAgentId}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                className="bg-green-600 hover:bg-green-700 text-white"
               >
                 <CirclePlus className="h-4 w-4 mr-2" />
                 Add
@@ -265,41 +265,41 @@ const SampleQuestions = () => {
 
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 text-indigo-600 animate-spin mb-4" />
-              <p className="text-indigo-600 text-sm">Loading queries...</p>
+              <Loader2 className="h-8 w-8 text-green-600 animate-spin mb-4" />
+              <p className="text-green-600 text-sm">Loading queries...</p>
             </div>
           ) : queries.length === 0 ? (
-            <div className="text-center py-12 border border-dashed border-indigo-200 rounded-lg bg-indigo-50/50">
-              <Info className="h-10 w-10 text-indigo-400 mx-auto mb-3" />
-              <h3 className="text-indigo-700 font-medium mb-1">No queries yet</h3>
-              <p className="text-indigo-500 text-sm max-w-md mx-auto">
+            <div className="text-center py-12 border border-dashed border-green-200 rounded-lg bg-green-50/50">
+              <Info className="h-10 w-10 text-green-400 mx-auto mb-3" />
+              <h3 className="text-green-700 font-medium mb-1">No queries yet</h3>
+              <p className="text-green-500 text-sm max-w-md mx-auto">
                 Add your first query to start training your agent
               </p>
             </div>
           ) : (
-            <div className="rounded-lg border border-indigo-100 overflow-hidden">
+            <div className="rounded-lg border border-green-100 overflow-hidden">
               <Table>
-                <TableHeader className="bg-indigo-50">
+                <TableHeader className="bg-green-50">
                   <TableRow>
-                    <TableHead className="text-indigo-700 font-semibold w-full">Question</TableHead>
-                    <TableHead className="text-indigo-700 font-semibold text-right w-28">Actions</TableHead>
+                    <TableHead className="text-green-700 font-semibold w-full">Question</TableHead>
+                    <TableHead className="text-green-700 font-semibold text-right w-28">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {queries.map((query) => (
-                    <TableRow key={query._id} className="hover:bg-indigo-50/50 transition-colors">
+                    <TableRow key={query._id} className="hover:bg-green-50/50 transition-colors">
                       <TableCell>
                         {editingQueryId === query._id ? (
                           <Input
                             type="text"
                             value={editingText}
                             onChange={(e) => setEditingText(e.target.value)}
-                            className="border-indigo-200 focus-visible:ring-indigo-500"
+                            className="border-green-200 focus-visible:ring-green-500"
                             autoFocus
                           />
                         ) : (
                           <div className="flex items-center">
-                            <Badge variant="outline" className="mr-2 bg-indigo-100 text-indigo-700 border-indigo-200">Q</Badge>
+                            <Badge variant="outline" className="mr-2 bg-green-100 text-green-700 border-green-200">Q</Badge>
                             <span>{query.query}</span>
                           </div>
                         )}
@@ -333,7 +333,7 @@ const SampleQuestions = () => {
                                     onClick={() => handleEdit(query._id, query.query)}
                                     variant="ghost"
                                     size="sm"
-                                    className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
+                                    className="text-green-600 hover:text-green-700 hover:bg-green-50"
                                   >
                                     <Pencil className="h-4 w-4" />
                                   </Button>
