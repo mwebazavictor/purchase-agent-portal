@@ -11,8 +11,8 @@ const ImageCarousel = () => {
   const images: CarouselImage[] = [
     { src: "lovable-uploads/1.png", alt: "Scenic lake with tree reflections and TAI Agent Suite text" },
     { src: "lovable-uploads/2.png", alt: "Forest with TAI Agent Suite text formed by leaves" },
-    { src: "lovable-uploads/3.png", alt: "Business team using advanced technology interfaces" },
-    { src: "lovable-uploads/4", alt: "Business professionals with holographic displays" }
+    { src: "lovable-uploads/3.jpg", alt: "Business team using advanced technology interfaces" },
+    { src: "lovable-uploads/4.jpg", alt: "Business professionals with holographic displays" }
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
