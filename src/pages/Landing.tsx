@@ -3,10 +3,35 @@ import { Link } from "react-router-dom";
 import { ChevronRight, Shield, Brain, Users, Rocket, ArrowRight, Zap } from "lucide-react";
 import AnimatedLogo from "@/components/AnimatedLogo";
 import TranslucentNavbar from "@/components/TranslucentNavbar";
+import SocialProof from "@/components/SocialProof";
+import HowItWorks from "@/components/HowItWorks";
+import MeshBackground from "@/components/MeshBackground";
+import { useEffect } from "react";
 
 const Landing = () => {
+  // Add parallax effect on mouse move
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const meshPoints = document.querySelector('.mesh-points');
+      const meshLines = document.querySelector('.mesh-lines');
+      
+      if (meshPoints && meshLines) {
+        const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+        const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+        
+        meshPoints.setAttribute('style', `transform: translate(${moveX}px, ${moveY}px)`);
+        meshLines.setAttribute('style', `transform: translate(${moveX * 0.5}px, ${moveY * 0.5}px)`);
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      <MeshBackground />
+      
       {/* Translucent Navbar */}
       <TranslucentNavbar />
       
@@ -45,13 +70,19 @@ const Landing = () => {
         </div>
       </header>
 
+      {/* Social Proof Section */}
+      <SocialProof />
+
+      {/* How It Works Section */}
+      <HowItWorks />
+
       {/* Features */}
       <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 tech-gradient-text">Why Choose TAI Agent Suite?</h2>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white dark:bg-secondary/50 p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
+            <div className="glass-card p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
               <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
                 <Zap className="text-primary w-6 h-6" />
               </div>
@@ -59,7 +90,7 @@ const Landing = () => {
               <p className="text-muted-foreground">Automate routine tasks and workflows, saving valuable time and resources.</p>
             </div>
             
-            <div className="bg-white dark:bg-secondary/50 p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
+            <div className="glass-card p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
               <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
                 <Brain className="text-primary w-6 h-6" />
               </div>
@@ -67,7 +98,7 @@ const Landing = () => {
               <p className="text-muted-foreground">Leverage advanced AI to gain valuable data insights and make informed decisions.</p>
             </div>
             
-            <div className="bg-white dark:bg-secondary/50 p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
+            <div className="glass-card p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
               <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
                 <Shield className="text-primary w-6 h-6" />
               </div>
@@ -75,7 +106,7 @@ const Landing = () => {
               <p className="text-muted-foreground">Enterprise-grade security with seamless integration into your existing systems.</p>
             </div>
             
-            <div className="bg-white dark:bg-secondary/50 p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
+            <div className="glass-card p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
               <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
                 <Users className="text-primary w-6 h-6" />
               </div>
@@ -83,7 +114,7 @@ const Landing = () => {
               <p className="text-muted-foreground">Elevate customer satisfaction with personalized AI-driven interactions.</p>
             </div>
             
-            <div className="bg-white dark:bg-secondary/50 p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
+            <div className="glass-card p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
               <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
                 <Rocket className="text-primary w-6 h-6" />
               </div>
@@ -91,7 +122,7 @@ const Landing = () => {
               <p className="text-muted-foreground">From startups to enterprises, our agents scale with your business needs.</p>
             </div>
             
-            <div className="bg-white dark:bg-secondary/50 p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
+            <div className="glass-card p-6 rounded-xl shadow-sm hover:shadow-md transition-all">
               <div className="rounded-full bg-primary/10 w-12 h-12 flex items-center justify-center mb-4">
                 <Zap className="text-primary w-6 h-6" />
               </div>

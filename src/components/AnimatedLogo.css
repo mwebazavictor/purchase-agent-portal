@@ -1,0 +1,84 @@
+@keyframes galaxySpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes orbit {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(150px, 0) rotate(360deg); }
+}
+
+@keyframes orbitReverse {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(100px, 50px) rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-30px); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+@keyframes ripple {
+  0% { 
+    r: 20;
+    opacity: 0.6;
+  }
+  100% { 
+    r: 80;
+    opacity: 0;
+  }
+}
+
+@keyframes wave {
+  0% { d: path("M200 100 Q400 50 600 100"); }
+  50% { d: path("M200 100 Q400 150 600 100"); }
+  100% { d: path("M200 100 Q400 50 600 100"); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-40px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes explode {
+  0% { 
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% { 
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+/* Animation Classes */
+.orbit-fast {
+  animation: orbit 3s infinite linear;
+}
+
+.ripple {
+  animation: ripple 3s infinite;
+}
+
+.wave {
+  animation: wave 4s infinite;
+}
+
+.float {
+  animation: float 6s infinite;
+}
+
+.explode {
+  animation: explode 2s infinite;
+}
+
+.pulse-text {
+  animation: pulse 2s infinite;
+} 
