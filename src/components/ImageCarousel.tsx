@@ -9,10 +9,10 @@ interface CarouselImage {
 
 const ImageCarousel = () => {
   const images: CarouselImage[] = [
-    { src: "lovable-uploads/749eb53c-d92e-4a39-a4e0-188f533357a3.png", alt: "Scenic lake with tree reflections and TAI Agent Suite text" },
-    { src: "lovable-uploads/18e6bc87-794b-4ff8-a06c-eea5e0829b1b.png", alt: "Forest with TAI Agent Suite text formed by leaves" },
-    { src: "lovable-uploads/b162ba15-7bf0-4617-bed6-f69331121e87.png", alt: "Business team using advanced technology interfaces" },
-    { src: "lovable-uploads/3d1d9233-661a-49cf-94d7-e5d3362ca117.png", alt: "Business professionals with holographic displays" }
+    { src: "lovable-uploads/1.png", alt: "Scenic lake with tree reflections and TAI Agent Suite text" },
+    { src: "lovable-uploads/2.png", alt: "Forest with TAI Agent Suite text formed by leaves" },
+    { src: "lovable-uploads/3.png", alt: "Business team using advanced technology interfaces" },
+    { src: "lovable-uploads/4", alt: "Business professionals with holographic displays" }
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
