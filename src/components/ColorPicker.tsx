@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { cn } from "@/lib/utils";
 
@@ -7,13 +6,15 @@ interface ColorPickerProps {
   initialColor?: string;
   className?: string;
   isBackgroundColor?: boolean;
+  title?: string;
 }
 
 const ColorPicker = ({ 
   onSelectColor, 
   initialColor = '#000000', 
   className,
-  isBackgroundColor = false 
+  isBackgroundColor = false,
+  title
 }: ColorPickerProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState(initialColor);
@@ -54,7 +55,7 @@ const ColorPicker = ({
           isBackgroundColor ? "bg-emerald-50 dark:bg-emerald-900/30" : ""
         )}
         onClick={() => setIsOpen(!isOpen)}
-        title={isBackgroundColor ? "Background Color" : "Text Color"}
+        title={title || (isBackgroundColor ? "Background Color" : "Text Color")}
       >
         <div 
           className="w-5 h-5 rounded-sm" 
