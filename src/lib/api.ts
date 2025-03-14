@@ -222,3 +222,26 @@ export const pdfApi = {
     });
   },
 };
+
+// Email APIs
+export const emailApi = {
+  sendEmail: async (data: {
+    sender: string;
+    recipients: string[];
+    subject: string;
+    htmlContent: string;
+  }): Promise<any> => {
+    return apiFetch("/emails/send", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+  
+  getEmails: async (companyId: string): Promise<any[]> => {
+    return apiFetch(`/emails/company/${companyId}`);
+  },
+  
+  getEmail: async (id: string): Promise<any> => {
+    return apiFetch(`/emails/${id}`);
+  },
+};

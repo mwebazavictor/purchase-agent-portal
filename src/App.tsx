@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +15,7 @@ import Dashboard from "./pages/Dashboard";
 import Agents from "./pages/Agents";
 import Implementation from "./pages/Implementation";
 import SampleQuestions from "./pages/SampleQuestions";
+import Emails from "./pages/Emails";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -80,6 +82,14 @@ const AppRoutes = () => {
         <ProtectedRoute>
           <Layout>
             <SampleQuestions />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/emails" element={
+        <ProtectedRoute>
+          <Layout>
+            <Emails />
           </Layout>
         </ProtectedRoute>
       } />

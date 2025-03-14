@@ -9,6 +9,7 @@ import {
   ShoppingBag, 
   Code, 
   MessageSquare,
+  Mail,
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,11 @@ const Sidebar = () => {
       path: "/sample-questions",
       name: "Sample Questions",
       icon: <MessageSquare size={20} />,
+    },
+    {
+      path: "/emails",
+      name: "Emails",
+      icon: <Mail size={20} />,
     },
     {
       path: "/implementation",
