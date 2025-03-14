@@ -119,6 +119,9 @@ const EmailContentEditor = ({ value, onChange }: EmailContentEditorProps) => {
       imgHtml = includeLink && imageLink
         ? `<a href="${imageLink}" target="_blank"><img src="${imageUrl}" style="max-width: 100%;" alt="Email image" /></a>`
         : `<img src="${imageUrl}" style="max-width: 100%;" alt="Email image" />`;
+        
+      // Insert at cursor position
+      execFormatCommand('insertHTML', imgHtml);
     }
     // Using File
     else if (imageFile) {
@@ -129,15 +132,11 @@ const EmailContentEditor = ({ value, onChange }: EmailContentEditorProps) => {
           ? `<a href="${imageLink}" target="_blank"><img src="${imgSrc}" style="max-width: 100%;" alt="Email image" /></a>`
           : `<img src="${imgSrc}" style="max-width: 100%;" alt="Email image" />`;
         
-        // Insert at cursor position or append to end
+        // Insert at cursor position
         execFormatCommand('insertHTML', imgHtml);
       };
       reader.readAsDataURL(imageFile);
       return; // Early return for async operation
-    }
-    
-    if (imgHtml) {
-      execFormatCommand('insertHTML', imgHtml);
     }
     
     // Reset image dialog state
@@ -700,6 +699,8 @@ const EmailContentEditor = ({ value, onChange }: EmailContentEditorProps) => {
           "prose-headings:text-emerald-800 dark:prose-headings:text-emerald-300",
           "prose-p:text-gray-700 dark:prose-p:text-gray-300"
         )}
+        style={{ direction: "ltr" }} /* Explicitly set left-to-right text direction */
+        dir="ltr" /* HTML attribute for text direction */
       ></div>
 
       {/* Table Dialog */}
