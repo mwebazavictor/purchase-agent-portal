@@ -1,4 +1,3 @@
-
 import { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -363,8 +362,8 @@ const EmailContentEditor = ({ value, onChange }: EmailContentEditorProps) => {
         <div className="h-6 w-px bg-emerald-200 dark:bg-emerald-700 mx-1"></div>
         
         {/* Color Pickers */}
-        <ColorPicker onSelectColor={handleTextColor} title="Text Color" />
-        <ColorPicker onSelectColor={handleBackgroundColor} isBackgroundColor={true} title="Background Color" />
+        <ColorPicker onSelectColor={handleTextColor} />
+        <ColorPicker onSelectColor={handleBackgroundColor} isBackgroundColor={true} />
         
         <div className="h-6 w-px bg-emerald-200 dark:bg-emerald-700 mx-1"></div>
         
@@ -699,8 +698,9 @@ const EmailContentEditor = ({ value, onChange }: EmailContentEditorProps) => {
           "prose-headings:text-emerald-800 dark:prose-headings:text-emerald-300",
           "prose-p:text-gray-700 dark:prose-p:text-gray-300"
         )}
-        style={{ direction: "ltr" }} /* Explicitly set left-to-right text direction */
-        dir="ltr" /* HTML attribute for text direction */
+        style={{ direction: "ltr", unicodeBidi: "bidi-override" }}
+        dir="ltr"
+        spellCheck="true"
       ></div>
 
       {/* Table Dialog */}
