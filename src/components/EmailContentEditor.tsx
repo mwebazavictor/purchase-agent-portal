@@ -5,6 +5,59 @@ import EditorToolbar from "./editor/EditorToolbar";
 import TableDialog from "./TableDialog";
 import CodeDialog from "./editor/CodeDialog";
 import ColumnsDialog from "./editor/ColumnsDialog";
+import { Button } from "@/components/ui/button";
+import {
+  Bold,
+  Italic,
+  Underline,
+  Strikethrough,
+  Subscript,
+  Superscript,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignJustify,
+  List,
+  ListOrdered,
+  Indent,
+  Outdent,
+  Quote,
+  Image as ImageIcon,
+  Link as LinkIcon,
+  FileIcon,
+  Type,
+  Table as TableIcon,
+  FileCode,
+  Code,
+  Divide,
+  SplitSquareVertical,
+} from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
+import { ColorPicker } from "@/components/editor/ColorPicker";
+import { EmojiPicker } from "./editor/EmojiPicker";
 
 interface EmailContentEditorProps {
   value: string;
@@ -26,6 +79,12 @@ const EmailContentEditor = ({ value, onChange }: EmailContentEditorProps) => {
   const [codeLanguage, setCodeLanguage] = useState("javascript");
   const [isColumnsDialogOpen, setIsColumnsDialogOpen] = useState(false);
   const [columnCount, setColumnCount] = useState(2);
+
+  // Image dialog states
+  const [imageUrl, setImageUrl] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [includeLink, setIncludeLink] = useState(false);
+  const [imageLink, setImageLink] = useState("");
 
   // Handle formatting commands
   const execFormatCommand = useCallback((command: string, value?: string) => {
@@ -169,6 +228,33 @@ const EmailContentEditor = ({ value, onChange }: EmailContentEditorProps) => {
   // Handle emoji insertion
   const handleEmojiSelect = (emoji: string) => {
     execFormatCommand('insertText', emoji);
+  };
+
+  // Handle image insertion
+  const handleInsertImage = () => {
+    let imageHtml = '';
+    const imgSrc = imageFile ? URL.createObjectURL(imageFile) : imageUrl;
+    
+    if (imgSrc) {
+      imageHtml = `<img src="${imgSrc}" alt="Inserted image" style="max-width: 100%; height: auto;">`;
+      
+      if (includeLink && imageLink) {
+        imageHtml = `<a href="${imageLink}" target="_blank">${imageHtml}</a>`;
+      }
+      
+      execFormatCommand('insertHTML', imageHtml);
+      
+      // Clean up object URL if it was created
+      if (imageFile) {
+        URL.revokeObjectURL(imgSrc);
+      }
+      
+      // Reset form
+      setImageUrl('');
+      setImageFile(null);
+      setImageLink('');
+      setIncludeLink(false);
+    }
   };
 
   // Helper functions
@@ -387,7 +473,7 @@ const EmailContentEditor = ({ value, onChange }: EmailContentEditorProps) => {
               className="h-8 px-2 rounded-md flex items-center gap-1"
               title="Insert Image"
             >
-              <Image className="h-4 w-4" />
+              <ImageIcon className="h-4 w-4" />
               <span className="text-xs">Image</span>
             </Button>
           </DialogTrigger>
@@ -519,7 +605,7 @@ const EmailContentEditor = ({ value, onChange }: EmailContentEditorProps) => {
           onClick={() => generalFileInputRef.current?.click()}
           title="Attach File"
         >
-          <File className="h-4 w-4" />
+          <FileIcon className="h-4 w-4" />
           <span className="text-xs">File</span>
           <input
             type="file"
@@ -542,7 +628,7 @@ const EmailContentEditor = ({ value, onChange }: EmailContentEditorProps) => {
                 onClick={() => setIsTableDialogOpen(true)}
                 className="flex items-center gap-2"
               >
-                <Table className="h-4 w-4" />
+                <TableIcon className="h-4 w-4" />
                 <span>Insert Table</span>
               </MenubarItem>
               

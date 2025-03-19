@@ -1,0 +1,5 @@
+* [33m80c4705[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Enhance Email Content Editor with improved color picker and text direction settings
+[31m|[m * [33m151a9d5[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Refactor components for readability
+[31m|[m[31m/[m  
+* [33mb22efff[m Fix email editor input direction
+* [33mac7650f[m Enhance Email Content Editor
