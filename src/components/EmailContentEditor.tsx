@@ -1,50 +1,10 @@
 import { useState, useRef, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Bold,
-  Italic,
-  Underline,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  AlignJustify,
-  Image,
-  Subscript,
-  Superscript,
-  Link as LinkIcon,
-  ListOrdered,
-  List,
-  Code,
-  FileCode,
-  Strikethrough,
-  Indent,
-  Outdent,
-  Quote,
-  Table,
-  SplitSquareVertical,
-  Divide,
-  File,
-  Type
-} from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import ColorPicker from "@/components/ColorPicker";
-import EmojiPicker from "@/components/EmojiPicker";
-import TableDialog from "@/components/TableDialog";
-import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
-import { Textarea } from "@/components/ui/textarea";
+import EditorToolbar from "./editor/EditorToolbar";
+import TableDialog from "./TableDialog";
+import CodeDialog from "./editor/CodeDialog";
+import ColumnsDialog from "./editor/ColumnsDialog";
 
 interface EmailContentEditorProps {
   value: string;
@@ -55,23 +15,15 @@ const EmailContentEditor = ({ value, onChange }: EmailContentEditorProps) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const [editorState, setEditorState] = useState("");
   
-  // Image attachment states
-  const [imageUrl, setImageUrl] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [includeLink, setIncludeLink] = useState(false);
-  const [imageLink, setImageLink] = useState("");
+  // File input refs
   const fileInputRef = useRef<HTMLInputElement>(null);
   const generalFileInputRef = useRef<HTMLInputElement>(null);
   
-  // Table dialog state
+  // Dialog states
   const [isTableDialogOpen, setIsTableDialogOpen] = useState(false);
-  
-  // Code dialog state
   const [isCodeDialogOpen, setIsCodeDialogOpen] = useState(false);
   const [codeContent, setCodeContent] = useState("");
   const [codeLanguage, setCodeLanguage] = useState("javascript");
-  
-  // Columns dialog state
   const [isColumnsDialogOpen, setIsColumnsDialogOpen] = useState(false);
   const [columnCount, setColumnCount] = useState(2);
 
@@ -91,8 +43,8 @@ const EmailContentEditor = ({ value, onChange }: EmailContentEditorProps) => {
   }, [onChange]);
 
   // Handle toolbar button clicks
-  const handleFormat = (format: string) => {
-    execFormatCommand(format);
+  const handleFormat = (format: string, value?: string) => {
+    execFormatCommand(format, value);
   };
 
   // Handle alignment changes
@@ -107,42 +59,6 @@ const EmailContentEditor = ({ value, onChange }: EmailContentEditorProps) => {
     if (alignment in alignmentCommands) {
       execFormatCommand(alignmentCommands[alignment as keyof typeof alignmentCommands]);
     }
-  };
-
-  // Handle image insertion
-  const handleInsertImage = () => {
-    let imgHtml = '';
-    
-    // Using URL
-    if (imageUrl) {
-      imgHtml = includeLink && imageLink
-        ? `<a href="${imageLink}" target="_blank"><img src="${imageUrl}" style="max-width: 100%;" alt="Email image" /></a>`
-        : `<img src="${imageUrl}" style="max-width: 100%;" alt="Email image" />`;
-        
-      // Insert at cursor position
-      execFormatCommand('insertHTML', imgHtml);
-    }
-    // Using File
-    else if (imageFile) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const imgSrc = e.target?.result as string;
-        imgHtml = includeLink && imageLink
-          ? `<a href="${imageLink}" target="_blank"><img src="${imgSrc}" style="max-width: 100%;" alt="Email image" /></a>`
-          : `<img src="${imgSrc}" style="max-width: 100%;" alt="Email image" />`;
-        
-        // Insert at cursor position
-        execFormatCommand('insertHTML', imgHtml);
-      };
-      reader.readAsDataURL(imageFile);
-      return; // Early return for async operation
-    }
-    
-    // Reset image dialog state
-    setImageUrl("");
-    setImageFile(null);
-    setIncludeLink(false);
-    setImageLink("");
   };
 
   // Handle content change
@@ -259,27 +175,13 @@ const EmailContentEditor = ({ value, onChange }: EmailContentEditorProps) => {
   const getFileIcon = (fileName: string) => {
     const extension = fileName.split('.').pop()?.toLowerCase();
     switch (extension) {
-      case 'pdf':
-        return '📄';
-      case 'doc':
-      case 'docx':
-        return '📝';
-      case 'xls':
-      case 'xlsx':
-        return '📊';
-      case 'ppt':
-      case 'pptx':
-        return '📋';
-      case 'zip':
-      case 'rar':
-        return '🗜️';
-      case 'jpg':
-      case 'jpeg':
-      case 'png':
-      case 'gif':
-        return '🖼️';
-      default:
-        return '📎';
+      case 'pdf': return '📄';
+      case 'doc': case 'docx': return '📝';
+      case 'xls': case 'xlsx': return '📊';
+      case 'ppt': case 'pptx': return '📋';
+      case 'zip': case 'rar': return '🗜️';
+      case 'jpg': case 'jpeg': case 'png': case 'gif': return '🖼️';
+      default: return '📎';
     }
   };
 
@@ -711,98 +613,24 @@ const EmailContentEditor = ({ value, onChange }: EmailContentEditorProps) => {
       />
 
       {/* Code Block Dialog */}
-      <Dialog open={isCodeDialogOpen} onOpenChange={setIsCodeDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Insert Code Block</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="code-language">Language</Label>
-              <select
-                id="code-language"
-                value={codeLanguage}
-                onChange={(e) => setCodeLanguage(e.target.value)}
-                className="w-full p-2 rounded-md border border-emerald-200 dark:border-emerald-800 bg-background"
-              >
-                <option value="javascript">JavaScript</option>
-                <option value="html">HTML</option>
-                <option value="css">CSS</option>
-                <option value="python">Python</option>
-                <option value="java">Java</option>
-                <option value="csharp">C#</option>
-                <option value="php">PHP</option>
-                <option value="ruby">Ruby</option>
-                <option value="go">Go</option>
-                <option value="swift">Swift</option>
-                <option value="typescript">TypeScript</option>
-                <option value="sql">SQL</option>
-                <option value="shell">Shell/Bash</option>
-                <option value="plaintext">Plain Text</option>
-              </select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="code-content">Code</Label>
-              <Textarea
-                id="code-content"
-                value={codeContent}
-                onChange={(e) => setCodeContent(e.target.value)}
-                placeholder="Paste your code here..."
-                className="font-mono h-[200px] border-emerald-200 dark:border-emerald-800"
-              />
-            </div>
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setIsCodeDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleInsertCode}>
-              Insert Code
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <CodeDialog
+        isOpen={isCodeDialogOpen}
+        setIsOpen={setIsCodeDialogOpen}
+        codeContent={codeContent}
+        setCodeContent={setCodeContent}
+        codeLanguage={codeLanguage}
+        setCodeLanguage={setCodeLanguage}
+        handleInsertCode={handleInsertCode}
+      />
 
       {/* Columns Dialog */}
-      <Dialog open={isColumnsDialogOpen} onOpenChange={setIsColumnsDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Insert Column Layout</DialogTitle>
-          </DialogHeader>
-          <div className="py-4 space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="column-count">Number of Columns</Label>
-              <Input
-                id="column-count"
-                type="number"
-                min="2"
-                max="4"
-                value={columnCount}
-                onChange={(e) => setColumnCount(Math.max(2, Math.min(4, parseInt(e.target.value) || 2)))}
-                className="border-emerald-200 dark:border-emerald-800"
-              />
-            </div>
-            <div className="flex items-center justify-center gap-2 p-4">
-              {Array.from({ length: columnCount }).map((_, i) => (
-                <div 
-                  key={i} 
-                  className="flex-1 border border-dashed border-emerald-300 dark:border-emerald-600 h-20 rounded-md flex items-center justify-center text-emerald-600 dark:text-emerald-400"
-                >
-                  Column {i + 1}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setIsColumnsDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleInsertColumns}>
-              Insert Columns
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ColumnsDialog
+        isOpen={isColumnsDialogOpen}
+        setIsOpen={setIsColumnsDialogOpen}
+        columnCount={columnCount}
+        setColumnCount={setColumnCount}
+        handleInsertColumns={handleInsertColumns}
+      />
     </div>
   );
 };
