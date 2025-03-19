@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Popover,
@@ -6,10 +7,12 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Paintbrush, Type } from "lucide-react";
+import type { Editor } from '@tiptap/react';
 
 interface ColorPickerProps {
   onSelectColor: (color: string) => void;
   isBackgroundColor?: boolean;
+  editor?: Editor;
 }
 
 const COLORS = [
@@ -18,7 +21,7 @@ const COLORS = [
   "#e6b8af", "#f4cccc", "#fce5cd", "#fff2cc", "#d9ead3", "#d0e0e3", "#c9daf8", "#cfe2f3", "#d9d2e9", "#ead1dc",
 ];
 
-export const ColorPicker = ({ onSelectColor, isBackgroundColor = false }: ColorPickerProps) => {
+export const ColorPicker = ({ onSelectColor, isBackgroundColor = false, editor }: ColorPickerProps) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -40,7 +43,7 @@ export const ColorPicker = ({ onSelectColor, isBackgroundColor = false }: ColorP
           {COLORS.map((color) => (
             <button
               key={color}
-              className="w-5 h-5 rounded border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-5 h-5 rounded border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
               style={{ backgroundColor: color }}
               onClick={() => onSelectColor(color)}
             />
@@ -49,4 +52,4 @@ export const ColorPicker = ({ onSelectColor, isBackgroundColor = false }: ColorP
       </PopoverContent>
     </Popover>
   );
-}; 
+};

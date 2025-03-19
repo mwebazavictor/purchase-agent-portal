@@ -1,10 +1,10 @@
 
 import React from 'react';
 import { Separator } from "@/components/ui/separator";
-import { FormatButtons } from "./FormatButtons";
-import { AlignmentButtons } from "./AlignmentButtons";
+import FormatButtons from "./FormatButtons";
+import AlignmentButtons from "./AlignmentButtons";
 import { ListButtons } from "./ListButtons";
-import { InsertButtons } from "./InsertButtons";
+import InsertButtons from "./InsertButtons";
 import { ColorPicker } from "./ColorPicker";
 import type { Editor } from '@tiptap/react';
 
@@ -37,7 +37,10 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
         onColumnsClick={() => setShowColumnsDialog(true)}
       />
       <Separator orientation="vertical" className="h-8" />
-      <ColorPicker editor={editor} />
+      <ColorPicker 
+        onSelectColor={(color) => editor.chain().focus().setColor(color).run()} 
+        isBackgroundColor={false}
+      />
     </div>
   );
 };
