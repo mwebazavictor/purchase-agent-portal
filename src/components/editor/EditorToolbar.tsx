@@ -1,12 +1,12 @@
 
 import React from 'react';
 import { Separator } from "@/components/ui/separator";
-import FormatButtons from "./FormatButtons";
-import AlignmentButtons from "./AlignmentButtons";
-import ListButtons from "./ListButtons";
-import InsertButtons from "./InsertButtons";
-import ColorPicker from "./ColorPicker";
-import { Editor } from '@tiptap/react';
+import { FormatButtons } from "./FormatButtons";
+import { AlignmentButtons } from "./AlignmentButtons";
+import { ListButtons } from "./ListButtons";
+import { InsertButtons } from "./InsertButtons";
+import { ColorPicker } from "./ColorPicker";
+import type { Editor } from '@tiptap/react';
 
 interface EditorToolbarProps {
   editor: Editor | null;
