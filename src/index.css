@@ -109,6 +109,23 @@
     background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2310b981' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
       linear-gradient(to bottom, rgba(16, 185, 129, 0.05), rgba(245, 158, 11, 0.05));
   }
+  
+  /* New components for the redesigned landing page */
+  .bg-grid-pattern {
+    background-size: 50px 50px;
+    background-image:
+      linear-gradient(to right, rgba(99, 102, 241, 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(99, 102, 241, 0.1) 1px, transparent 1px);
+  }
+  
+  .futuristic-card {
+    @apply bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-xl p-8 hover:shadow-[0_0_15px_rgba(99,102,241,0.2)] transition-all duration-300;
+  }
+  
+  .glow-border {
+    box-shadow: 0 0 10px 0 rgba(99, 102, 241, 0.3), 
+                inset 0 0 5px 0 rgba(99, 102, 241, 0.2);
+  }
 }
 
 @layer utilities {
@@ -122,6 +139,15 @@
   
   .tech-gradient-text {
     @apply bg-gradient-to-r from-emerald-600 via-amber-500 to-teal-500 bg-clip-text text-transparent;
+  }
+  
+  /* New utilities for the redesigned landing page */
+  .text-gradient-purple {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400;
+  }
+  
+  .bg-gradient-indigo {
+    @apply bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700;
   }
 }
 
@@ -150,4 +176,18 @@
 @keyframes ripple {
   0% { r: 20; opacity: 0.7; }
   100% { r: 60; opacity: 0; }
+}
+
+/* New animations for the landing page */
+@keyframes pulse-gentle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.4; }
+}
+
+.animate-pulse-gentle {
+  animation: pulse-gentle 4s ease-in-out infinite;
+}
+
+.delay-1000 {
+  animation-delay: 1000ms;
 }

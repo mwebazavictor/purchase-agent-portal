@@ -1,25 +1,43 @@
 
 import React from 'react';
-import { FormatButtons } from './FormatButtons';
-import { AlignmentButtons } from './AlignmentButtons';
-import { ListButtons } from './ListButtons';
-import { InsertButtons } from './InsertButtons';
+import { Separator } from "@/components/ui/separator";
+import FormatButtons from "./FormatButtons";
+import AlignmentButtons from "./AlignmentButtons";
+import ListButtons from "./ListButtons";
+import InsertButtons from "./InsertButtons";
+import ColorPicker from "./ColorPicker";
+import { Editor } from '@tiptap/react';
 
 interface EditorToolbarProps {
-  editor: any;
+  editor: Editor | null;
+  setShowCodeDialog: (show: boolean) => void;
+  setShowColumnsDialog: (show: boolean) => void;
 }
 
-const EditorToolbar = ({ editor }: EditorToolbarProps) => {
+const EditorToolbar: React.FC<EditorToolbarProps> = ({
+  editor,
+  setShowCodeDialog,
+  setShowColumnsDialog
+}) => {
   if (!editor) {
     return null;
   }
 
   return (
-    <div className="flex flex-wrap gap-1 p-1 border border-input rounded-md bg-background sticky top-0 z-10">
+    <div className="border border-input bg-background rounded-md p-1 flex flex-wrap gap-1 items-center">
       <FormatButtons editor={editor} />
+      <Separator orientation="vertical" className="h-8" />
       <AlignmentButtons editor={editor} />
+      <Separator orientation="vertical" className="h-8" />
       <ListButtons editor={editor} />
-      <InsertButtons editor={editor} />
+      <Separator orientation="vertical" className="h-8" />
+      <InsertButtons 
+        editor={editor} 
+        onCodeClick={() => setShowCodeDialog(true)}
+        onColumnsClick={() => setShowColumnsDialog(true)}
+      />
+      <Separator orientation="vertical" className="h-8" />
+      <ColorPicker editor={editor} />
     </div>
   );
 };
