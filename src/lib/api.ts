@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 import { 
   User, 
@@ -243,5 +242,23 @@ export const emailApi = {
   
   getEmail: async (id: string): Promise<any> => {
     return apiFetch(`/emails/${id}`);
+  },
+};
+
+// Google Connection APIs
+export const googleConnectionApi = {
+  connectGoogleAccount: async (data: {
+    company_id: string;
+    client_id: string;
+    client_secret: string;
+  }): Promise<any> => {
+    return apiFetch("/mail/post_google_auth", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+  
+  getGoogleConnectionStatus: async (companyId: string): Promise<any> => {
+    return apiFetch(`/mail/google_connection_status/${companyId}`);
   },
 };

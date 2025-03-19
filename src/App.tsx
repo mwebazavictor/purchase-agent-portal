@@ -16,6 +16,7 @@ import Agents from "./pages/Agents";
 import Implementation from "./pages/Implementation";
 import SampleQuestions from "./pages/SampleQuestions";
 import Emails from "./pages/Emails";
+import Connections from "./pages/Connections";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -90,6 +91,14 @@ const AppRoutes = () => {
         <ProtectedRoute>
           <Layout>
             <Emails />
+          </Layout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/connections" element={
+        <ProtectedRoute>
+          <Layout>
+            <Connections />
           </Layout>
         </ProtectedRoute>
       } />
