@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import TranslucentNavbar from "@/components/TranslucentNavbar";
 import { Link } from "react-router-dom";
-import { BrainCircuit } from "lucide-react";
+import { BrainCircuit, Sparkles } from "lucide-react";
 import GlowingBlob from "@/components/GlowingBlob";
 
 const LandingPage: React.FC = () => {
@@ -18,12 +18,28 @@ src="https://ai-customer-support-productio.up.railway.app/api/chat-script?compan
       </motion.div>
       <GlowingBlob />
       <header className="w-full max-w-4xl text-center py-8 pb-2">
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-wide text-white">
-          Introducing TAI Agent Force
-        </h1>
+      {/* <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-6 mt-12 leading-tight">
+              <span className="block">Intelligent Agents</span>
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400">Powering Your Business</span>
+            </h1>
         <p className="text-lg md:text-xl mt-4 text-gray-300">
           The next evolution in intelligent automation.
-        </p>
+        </p> */}
+        <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
+            <div className="inline-flex items-center bg-red-950/50 border border-red-800/50 rounded-full px-4 py-1.5 mb-8">
+              <Sparkles className="h-4 w-4 text-red-400 mr-2" />
+              <span className="text-sm text-red-300">Introducing TAI Agents Force Suite</span>
+            </div>
+            
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-6 leading-tight">
+              <span className="block">Tai Agent Force</span>
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 via-red-400 to-orange-400">Powering Your Business</span>
+            </h1>
+            
+            <p className="text-xl text-gray-400 mb-10 max-w-2xl">
+              Your all-in-one AI squad, built to tackle business complexity with intelligent automation and insights that transform operations.
+            </p>
+            </div>
       </header>
 
       {/* Features Section */}
@@ -57,8 +73,11 @@ src="https://ai-customer-support-productio.up.railway.app/api/chat-script?compan
           </motion.div>
         ))}
       </section>
+        {/* Agents*/}
+        <section>
 
-      {/* Testimonials */}
+        </section>
+      {/* Partners */}
       <section className="w-full max-w-5xl mt-12 text-center">
         <h2 className="text-3xl font-bold text-white">Who are we working with?</h2>
         <p className="text-gray-400 mt-4">Some of our Partners.</p>
@@ -66,7 +85,7 @@ src="https://ai-customer-support-productio.up.railway.app/api/chat-script?compan
           {partners.map((partner, index) => (
             <motion.div
               key={index}
-              className="p-2 bg-white/10 rounded-xl shadow-md max-w-sm"
+              className="p-2 bg-white/80 rounded-xl shadow-md max-w-sm"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.2, duration: 0.8 }}
@@ -134,6 +153,13 @@ const features = [
     footer: "From ticket triage to sales forecasts, your processes run like clockwork.",
   },
 ];
+const Agents = [
+  {
+    tag:"Customer Support Agent",
+    name:"Jamie",
+    description:""
+  }
+]
 
 const partners = [
   {

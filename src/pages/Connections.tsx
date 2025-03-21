@@ -51,7 +51,7 @@ const Connections = () => {
       setClientSecret("");
   
       // Redirect to Google's OAuth 2.0 Authorization URL
-      const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=https://purchase-agent-portal-production.up.railway.app/connections&response_type=code&scope=https://mail.google.com/&access_type=offline`;
+      const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=https://purchase-agent-portal-production.up.railway.app/connections&response_type=code&scope=https://mail.google.com/&access_type=online`;
   
       window.location.href = authUrl;
     } catch (error) {
