@@ -1,115 +1,184 @@
-import React from "react";
-import { motion } from "framer-motion";
-import TranslucentNavbar from "@/components/TranslucentNavbar";
+
+import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { BrainCircuit } from "lucide-react";
-import GlowingBlob from "@/components/GlowingBlob";
+import { ArrowRight, BrainCircuit } from "lucide-react";
+import { useEffect, useState } from "react";
+import TranslucentNavbar from "@/components/TranslucentNavbar";
 
-const LandingPage: React.FC = () => {
+const Landing = () => {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-black/80 text-white flex flex-col items-center justify-center px-6 md:px-12 lg:px-20">
+    <div className="min-h-screen bg-[#f8fafc] text-[#1A1F2C] overflow-x-hidden">
+      <TranslucentNavbar />
       
- <script 
-src="https://ai-customer-support-productio.up.railway.app/api/chat-script?companyId=67c55bd3cd3a1f19e7341979"
-></script>
-      {/* Header */}
-      <motion.div className="pb-20">
-        <TranslucentNavbar />
-      </motion.div>
-      <GlowingBlob />
-      <header className="w-full max-w-4xl text-center py-8 pb-2">
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-wide text-white">
-          Introducing TAI Agent Force
-        </h1>
-        <p className="text-lg md:text-xl mt-4 text-gray-300">
-          The next evolution in intelligent automation.
-        </p>
-      </header>
-
+      {/* Hero Section with Cards at the Top */}
+      <div className="relative pt-32 pb-20">
+        <div className="container mx-auto px-4">
+          {/* Three Cards Section */}
+          <div className="grid md:grid-cols-3 gap-6 mb-16">
+            {/* Card 1 */}
+            <div className="bg-white border-2 border-blue-100 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                <BrainCircuit className="text-blue-600 h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3 text-[#1A1F2C]">Customer Support</h3>
+              <p className="text-[#8E9196]">
+                24/7 AI-powered support to handle customer inquiries and resolve issues efficiently.
+              </p>
+            </div>
+            
+            {/* Card 2 */}
+            <div className="bg-white border-2 border-blue-100 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                <BrainCircuit className="text-blue-600 h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3 text-[#1A1F2C]">Data Analysis</h3>
+              <p className="text-[#8E9196]">
+                Process and analyze large datasets to extract valuable insights for your business.
+              </p>
+            </div>
+            
+            {/* Card 3 */}
+            <div className="bg-white border-2 border-blue-100 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                <BrainCircuit className="text-blue-600 h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3 text-[#1A1F2C]">Content Creation</h3>
+              <p className="text-[#8E9196]">
+                Generate high-quality content for marketing, social media, and more with AI assistance.
+              </p>
+            </div>
+          </div>
+          
+          {/* Main Heading */}
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+              <span className="block text-[#1A1F2C]">Intelligent Agents</span>
+              <span className="text-blue-600">Powering Your Business</span>
+            </h1>
+            <p className="text-lg text-[#8E9196] mb-8">
+              Your all-in-one AI squad, built to tackle business complexity with intelligent automation.
+            </p>
+          </div>
+          
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+            <Link to="/register" className="w-full">
+              <Button size="lg" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                Get Started <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+            <Link to="/sample-questions" className="w-full">
+              <Button size="lg" variant="outline" className="w-full border-blue-600 text-blue-600 hover:bg-blue-50">
+                View Demo
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+      
       {/* Features Section */}
-      <section className="w-full max-w-5xl mt-12 grid gap-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 text-center">
-        {features.map((feature, index) => (
-          <motion.div
-            key={index}
-            className="relative p-8 rounded-2xl shadow-lg bg-white/25 backdrop-blur-md sgroup transition-transform transform hover:scale-105"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.2, duration: 0.8 }}
-          >
-            {/* Border Glow */}
-            <div className="absolute inset-0 border-2 border-transparent rounded-2xl group-hover:border-gray-500 transition-all duration-500"></div>
-
-
-            {/* Title */}
-            <h3 className="text-2xl font-bold text-white group-hover:text-gray-300 transition-colors">
-              {feature.title}
-            </h3>
-
-            {/* Description */}
-            <p className="text-gray-400 mt-4 leading-relaxed group-hover:text-gray-300 transition-colors">
-              {feature.description}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4 text-[#1A1F2C]">
+              Why Choose TAI AgentsForce?
+            </h2>
+            <p className="text-[#8E9196] max-w-2xl mx-auto">
+              Our intelligent agents transform how businesses operate, delivering powerful automation and insights.
             </p>
-
-            {/* Footer */}
-            <p className="text-gray-400 italic text-sm mt-4">
-              {feature.footer}
-            </p>
-          </motion.div>
-        ))}
-      </section>
-
-      {/* Testimonials */}
-      <section className="w-full max-w-5xl mt-12 text-center">
-        <h2 className="text-3xl font-bold text-white">Who are we working with?</h2>
-        <p className="text-gray-400 mt-4">Some of our Partners.</p>
-        <div className="mt-8 flex flex-wrap justify-center gap-6">
-          {partners.map((partner, index) => (
-            <motion.div
-              key={index}
-              className="p-2 bg-white/10 rounded-xl shadow-md max-w-sm"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.2, duration: 0.8 }}
-            >
-              <img
-              src={partner.image} className="w-[100px] justify-center"/>
-            </motion.div>
-           
-          ))}
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-12">
+            {/* Feature 1 */}
+            <div className="border-l-2 border-blue-200 pl-6">
+              <h3 className="text-xl font-semibold mb-3 text-[#1A1F2C]">Streamlined Workflows</h3>
+              <p className="text-[#8E9196]">
+                Automate repetitive tasks and workflows to free up your team's time for more strategic work.
+              </p>
+            </div>
+            
+            {/* Feature 2 */}
+            <div className="border-l-2 border-blue-200 pl-6">
+              <h3 className="text-xl font-semibold mb-3 text-[#1A1F2C]">Enhanced Decision Making</h3>
+              <p className="text-[#8E9196]">
+                Leverage data-driven insights to make better decisions faster and with more confidence.
+              </p>
+            </div>
+            
+            {/* Feature 3 */}
+            <div className="border-l-2 border-blue-200 pl-6">
+              <h3 className="text-xl font-semibold mb-3 text-[#1A1F2C]">24/7 Availability</h3>
+              <p className="text-[#8E9196]">
+                AI agents never sleep, ensuring round-the-clock service for your customers and operations.
+              </p>
+            </div>
+            
+            {/* Feature 4 */}
+            <div className="border-l-2 border-blue-200 pl-6">
+              <h3 className="text-xl font-semibold mb-3 text-[#1A1F2C]">Scalable Solutions</h3>
+              <p className="text-[#8E9196]">
+                Easily scale your AI workforce up or down based on your business needs without hiring challenges.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
-
-      {/* CTA */}
-      <Link to="/register">
-        <motion.button
-          className="mt-12 px-8 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-lg font-semibold transition duration-300 shadow-lg"
-          whileHover={{ scale: 1.05 }}
-        >
-          Get Started
-        </motion.button>
-      </Link>
       
-
+      {/* CTA Section */}
+      <section className="py-20 bg-blue-50">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold mb-6 text-[#1A1F2C]">
+              Ready to Transform Your Business?
+            </h2>
+            <p className="text-lg mb-8 text-[#8E9196]">
+              Join innovative businesses already using TAI AgentsForce to revolutionize their operations.
+            </p>
+            <Link to="/register">
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg h-auto">
+                Get Started Today <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+      
       {/* Footer */}
-      <footer className="py-12 w-full">
+      <footer className="py-12 border-t border-gray-200 bg-white">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+            <div className="flex items-center mb-6 md:mb-0">
+              <BrainCircuit className="h-6 w-6 text-blue-600 mr-2" />
+              <h2 className="text-xl font-bold text-[#1A1F2C]">
+                TAI AGENTSFORCE
+              </h2>
+            </div>
+            
             <div className="flex gap-8">
-              <Link to="/login" className="text-gray-400 hover:text-gray-300 transition-colors">
+              <Link to="/login" className="text-[#8E9196] hover:text-blue-600 transition-colors">
                 Login
               </Link>
-              <Link to="/register" className="text-gray-400 hover:text-gray-300 transition-colors">
+              <Link to="/register" className="text-[#8E9196] hover:text-blue-600 transition-colors">
                 Register
               </Link>
-              <Link to="/sample-questions" className="text-gray-400 hover:text-gray-300 transition-colors">
+              <Link to="/sample-questions" className="text-[#8E9196] hover:text-blue-600 transition-colors">
                 Demo
               </Link>
             </div>
           </div>
-          <div className="pt-8 border-t border-gray-700 text-center">
-            <p className="text-gray-500">
-              © {new Date().getFullYear()} TAI AgentsForce. All rights reserved.
-            </p>
+          
+          <div className="pt-8 border-t border-gray-100 text-center">
+            <p className="text-[#8E9196]">© {new Date().getFullYear()} TAI AgentsForce. All rights reserved.</p>
           </div>
         </div>
       </footer>
@@ -117,46 +186,4 @@ src="https://ai-customer-support-productio.up.railway.app/api/chat-script?compan
   );
 };
 
-const features = [
-  {
-    title: "What is TAI AgentsForce?",
-    description: "TAI AgentsForce (Tubayo AI) is your all-in-one AI squad...",
-    footer: "Think of it as your digital workforce—always on, never complaining.",
-  },
-  {
-    title: "Why Use TAI AgentsForce?",
-    description: "Why slog through repetitive tasks? TAI AgentsForce saves time...",
-    footer: "It’s like hiring a dream team that doesn’t need coffee breaks.",
-  },
-  {
-    title: "How to Work with AI Agents?",
-    description: "Automating with TAI agents is a breeze: pick a function...",
-    footer: "From ticket triage to sales forecasts, your processes run like clockwork.",
-  },
-];
-
-const partners = [
-  {
-    image: "/partners/partner_1.avif"
-  },
-  {
-    image: "/partners/partner_2.avif" 
-  },
-  {
-    image: "/partners/partner_3.avif"
-  },
-  {
-    image: "/partners/partner_4.avif"
-  },
-  {
-    image: "/partners/partner_5.avif"
-  },
-  {
-    image: "/partners/partner_6.avif"
-  },
-  {
-    image: "/partners/partner_7.avif"
-  },
-];
-
-export default LandingPage;
+export default Landing;
