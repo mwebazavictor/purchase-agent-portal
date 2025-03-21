@@ -22,49 +22,71 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const initAuth = async () => {
+      setIsLoading(true);
       const token = localStorage.getItem("authToken");
+      const storedUser = localStorage.getItem("user");
+  
+      if (storedUser) {
+        setUser(JSON.parse(storedUser)); // Restore user data from local storage
+        setIsLoading(false);
+        return;
+      }
+  
       if (token) {
         try {
           const userData = await userApi.getCurrentUser();
-          // If API returns Company_id instead of company_id, normalize it
+          
           if (userData.Company_id && !userData.company_id) {
             userData.company_id = userData.Company_id;
           }
+  
           setUser(userData);
+          localStorage.setItem("user", JSON.stringify(userData)); // Persist user data
+  
         } catch (error) {
-          // Token might be expired, try to refresh
           const refreshToken = localStorage.getItem("refreshToken");
           if (refreshToken) {
             try {
               await authApi.refreshToken(refreshToken);
               const userData = await userApi.getCurrentUser();
-              // If API returns Company_id instead of company_id, normalize it
+              
               if (userData.Company_id && !userData.company_id) {
                 userData.company_id = userData.Company_id;
               }
+  
               setUser(userData);
+              localStorage.setItem("user", JSON.stringify(userData)); // Persist user data
+  
             } catch (refreshError) {
-              // Refresh failed, clear tokens
               localStorage.removeItem("authToken");
               localStorage.removeItem("refreshToken");
+              localStorage.removeItem("user");
             }
           }
         }
       }
       setIsLoading(false);
     };
-
+  
     initAuth();
   }, []);
+  
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
       const response = await authApi.login(email, password);
-      // If API returns Company_id instead of company_id, normalize it
+      
+      // Normalize company_id if needed
       if (response.user.Company_id && !response.user.company_id) {
         response.user.company_id = response.user.Company_id;
       }
+  
+      // Save tokens and user data to local storage
+      localStorage.setItem("authToken", response.token);
+      localStorage.setItem("refreshToken", response.refreshToken);
+      localStorage.setItem("user", JSON.stringify(response.user));
+  
       setUser(response.user);
       toast.success("Login successful");
       navigate("/dashboard");
@@ -75,6 +97,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(false);
     }
   };
+  
 
   // Frontend-only logout solution
   const logout = () => {
@@ -84,6 +107,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Clear tokens from localStorage
     localStorage.removeItem("authToken");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user")
     
     // Show success message
     toast.success("Logged out successfully");

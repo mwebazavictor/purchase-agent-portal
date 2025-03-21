@@ -19,7 +19,7 @@ const Connections = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   
-  const redirectURI = "https://multi-agents-production-aace.up.railway.app/api/v1/mail/google_auth";
+  const redirectURI = "https://purchase-agent-portal-production.up.railway.app/dashboard";
   
   const handleCopyRedirectURI = () => {
     navigator.clipboard.writeText(redirectURI);
@@ -31,24 +31,29 @@ const Connections = () => {
       toast.error("Please enter both Client ID and Client Secret");
       return;
     }
-    
+  
     setIsConnecting(true);
     try {
       const companyId = user?.company_id || user?.Company_id;
       if (!companyId) {
         throw new Error("Company ID not found");
       }
-      
+  
       await googleConnectionApi.connectGoogleAccount({
         company_id: companyId,
         client_id: clientId,
         client_secret: clientSecret,
       });
-      
+  
       toast.success("Successfully connected to Google");
       setShowConnectDialog(false);
       setClientId("");
       setClientSecret("");
+  
+      // Redirect to Google's OAuth 2.0 Authorization URL
+      const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=https://purchase-agent-portal-production.up.railway.app/connections&response_type=code&scope=https://mail.google.com/&access_type=offline`;
+  
+      window.location.href = authUrl;
     } catch (error) {
       console.error("Google connection error:", error);
       toast.error("Failed to connect to Google. Please try again.");
@@ -56,6 +61,7 @@ const Connections = () => {
       setIsConnecting(false);
     }
   };
+  
 
   const handleStartProcess = () => {
     setShowInstructionsDialog(true);
@@ -68,9 +74,8 @@ const Connections = () => {
         <div className="space-y-3">
           <p>Go to <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:underline flex items-center">
             console.cloud.google.com <ExternalLink className="h-3.5 w-3.5 ml-1" />
-          </a> and login with your Google account.</p>
-          <p>Navigate to <strong>API's & Services</strong> in the side menu.</p>
-          <img src="/lovable-uploads/1.png" alt="Google Cloud Console" className="rounded-md border border-gray-200 my-3 max-w-full" />
+          </a> and login with your Google account. Navigate to <strong>API's & Services</strong> in the side menu.</p>
+          <img src="/Instructions/2.png" alt="Google Cloud Console" className="rounded-md border border-gray-200 my-3 max-w-full" />
         </div>
       )
     },
@@ -79,7 +84,7 @@ const Connections = () => {
       content: (
         <div className="space-y-3">
           <p>Under <strong>API's & Services</strong>, select <strong>Credentials</strong> from the sidebar.</p>
-          <img src="/lovable-uploads/2.png" alt="Credentials Section" className="rounded-md border border-gray-200 my-3 max-w-full" />
+          <img src="/Instructions/3.png" alt="Credentials Section" className="rounded-md border border-gray-200 my-3 max-w-full" />
         </div>
       )
     },
@@ -88,9 +93,9 @@ const Connections = () => {
       content: (
         <div className="space-y-3">
           <p>Click <strong>Create Credentials</strong> and select <strong>OAuth client ID</strong>.</p>
-          <img src="/lovable-uploads/3.jpg" alt="Create OAuth Client ID" className="rounded-md border border-gray-200 my-3 max-w-full" />
+          <img src="/Instructions/4.png" alt="Create OAuth Client ID" className="rounded-md border border-gray-200 my-3 max-w-full" />
           <p>Complete the required fields for your OAuth client.</p>
-          <img src="/lovable-uploads/4.jpg" alt="OAuth Client Settings" className="rounded-md border border-gray-200 my-3 max-w-full" />
+          <img src="/Instructions/5.png" alt="OAuth Client Settings" className="rounded-md border border-gray-200 my-3 max-w-full" />
         </div>
       )
     },
