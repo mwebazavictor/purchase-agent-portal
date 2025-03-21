@@ -1,0 +1,94 @@
+# get access token and refresh token
+####
+ 
+POST  https://multi-agents-production-aace.up.railway.app/api/v1/mail/get_token HTTP/1.1
+content-type: application/json
+
+{
+
+  "code": "4/0AQSTgQEwPEVlBxNXZoseArwmCZ9nkE52ogZVsFK23fnYaRaW3iFXaQ0p8W_ocRCXG2m71Q", 
+  "client_id": "1088888122754-bsi597csnohl311velteva5jmj98qrt8.apps.googleusercontent.com",
+  "client_secret": "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"
+
+
+}
+
+###
+# get new access token
+
+
+POST  https://multi-agents-production-aace.up.railway.app/api/v1/mail/refresh_token HTTP/1.1
+Content-Type: application/json
+
+{
+    "refresh_token": "1//03uPaWEXdD7xnCgYIARAAGAMSNwF-L9IrXRSOa1YqvXU5uYc7r4zeJa20eN7-uwnXVyW36LRzMlMjlimqeqCDIkrv3vxX3zDrRoQ",
+    "client_id": "1088888122754-bsi597csnohl311velteva5jmj98qrt8.apps.googleusercontent.com",
+    "client_secret": "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"
+}
+
+###
+
+POST  https://multi-agents-production-aace.up.railway.app/api/v1/mail/post_google_auth HTTP/1.1
+Content-Type: application/json
+
+{
+    "company_id": "67ac6f7bc3f86a6b8a5b7533",
+    "client_id": "1088888122754-bsi597csnohl311velteva5jmj98qrt8.apps.googleusercontent.com",
+    "client_secret": "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"
+}
+
+
+###
+
+
+PUT https://multi-agents-production-aace.up.railway.app/api/v1/mail/post_google_auth/67d7effcc2705534f9a56619 HTTP/1.1
+Content-Type: application/json
+
+{
+    "refresh_token": "1//03uPaWEXdD7xnCgYIARAAGAMSNwF-L9IrXRSOa1YqvXU5uYc7r4zeJa20eN7-uwnXVyW36LRzMlMjlimqeqCDIkrv3vxX3zDrRoQ",
+    "client_id": "1088888122754-bsi597csnohl311velteva5jmj98qrt8.apps.googleusercontent.com",
+    "client_secret": "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"
+}
+###
+GET   https://multi-agents-production-aace.up.railway.app/api/v1/mail/post_google_auth/67d7effcc2705534f9a56619 HTTP/1.1
+Content-Type: application/json
+
+
+
+
+
+###
+POST  https://multi-agents-production-aace.up.railway.app/api/v1/mail HTTP/1.1
+content-type: application/json
+
+{
+    "access_token": "ya29.a0AeXRPp5YznzOGBz751cu_BCJl_sbG56EiIVKY6mCQ9stqKf9X5SpEAEFjmEvmnDs96ULVmBYRAP3CoG9-a6EkPDLM6Nz-nzwolKNk34EA_HFpsy4kwazomJHWmbKfIKkoZorMnWOCQ4lBi9pvA_fK9kyK8t9TJYeI_GN5d4BGAaCgYKAbwSARESFQHGX2MifXetkDZ8XZB7BG35cOl-pA0177",
+    "sender_email": "alfredkaziibwe19@gmail.com",
+    "subject": "Thank You for Your Purchase",
+    "html_body": "<html><body><p>Dear Vendor,</p><p>Thank you for your purchase.</p><img src=\"cid:image1\" alt=\"Garage Image\" /><p>More details:</p><img src=\"cid:image2\" alt=\"Customer Image\" /><p>Best regards,</p></body></html>",
+    "recipients": ["alfredkaziibwe19@gmail.com","alfredkaziibwe03@gmail.com"],
+    "images": ["https://autofore.com/garage.jpg","https://autofore.com/customer.png"]
+  }
+
+
+
+
+###
+# api to get single users
+GET https://multi-agents-production-aace.up.railway.app/api/v1/mail HTTP/1.1
+content-type: application/json
+Authorization: Bearer ya29.a0AeXRPp5YznzOGBz751cu_BCJl_sbG56EiIVKY6mCQ9stqKf9X5SpEAEFjmEvmnDs96ULVmBYRAP3CoG9-a6EkPDLM6Nz-nzwolKNk34EA_HFpsy4kwazomJHWmbKfIKkoZorMnWOCQ4lBi9pvA_fK9kyK8t9TJYeI_GN5d4BGAaCgYKAbwSARESFQHGX2MifXetkDZ8XZB7BG35cOl-pA0177
+
+
+###
+# api to get a 
+GET  https://multi-agents-production-aace.up.railway.app/api/v1/mail/195a47c4b6999406 HTTP/1.1
+content-type: application/json
+Authorization: Bearer ya29.a0AeXRPp5YznzOGBz751cu_BCJl_sbG56EiIVKY6mCQ9stqKf9X5SpEAEFjmEvmnDs96ULVmBYRAP3CoG9-a6EkPDLM6Nz-nzwolKNk34EA_HFpsy4kwazomJHWmbKfIKkoZorMnWOCQ4lBi9pvA_fK9kyK8t9TJYeI_GN5d4BGAaCgYKAbwSARESFQHGX2MifXetkDZ8XZB7BG35cOl-pA0177
+
+
+###
+
+DELETE   https://multi-agents-production-aace.up.railway.app/api/v1/mail/195a4464ff74f46c HTTP/1.1
+content-type: application/json
+Authorization: Bearer ya29.a0AeXRPp5YznzOGBz751cu_BCJl_sbG56EiIVKY6mCQ9stqKf9X5SpEAEFjmEvmnDs96ULVmBYRAP3CoG9-a6EkPDLM6Nz-nzwolKNk34EA_HFpsy4kwazomJHWmbKfIKkoZorMnWOCQ4lBi9pvA_fK9kyK8t9TJYeI_GN5d4BGAaCgYKAbwSARESFQHGX2MifXetkDZ8XZB7BG35cOl-pA0177
