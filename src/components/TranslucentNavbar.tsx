@@ -16,11 +16,11 @@ const TranslucentNavbar = () => {
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-transparent'}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 mb-4 ${scrolled ? 'bg-white/15 backdrop-blur-md shadow-sm' : 'bg-transparent'}`}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <div className="flex items-center">
-          <BrainCircuit className="h-7 w-7 text-blue-600 mr-2" />
-          <span className="text-xl font-bold text-[#1A1F2C]">
+          <BrainCircuit className="h-7 w-7 text-white mr-2" />
+          <span className="text-xl font-bold text-[#ffffff]">
             TAI AGENTSFORCE
           </span>
         </div>
